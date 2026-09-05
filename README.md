@@ -33,12 +33,13 @@ Plan: 5 hunts each variant, same area/bounty type where possible.
 | `web_casts` / `maelstrom_casts` / `tether_casts` / `pain_casts` | `incant 118` / `prep 710` / `incant\|prep 706` / `prep\|prepare 711` command sends, from **any** script in the window (attack-* and fizzsac) |
 | `symbol_mana_casts` | `symbol of mana` sends (bigshot casts it; the game logs no mana amount) |
 | `mana_out` | confirmed casts only, priced at targeted cost (Web 5, Maelstrom 10, Tether 6, Pain 11) |
-| `mana_in` | explicit "N mana surge into you" (sac4mana's `sacrifice mana`). Does **not** include Symbol of Mana (unlogged) or natural regen. |
+| `mana_in` | "N mana surge into you" (sac4mana's `sacrifice mana`) + 50 per `symbol_mana_casts` (Symbol of Mana is a flat 50-point refill, unlogged). Excludes natural regen. |
 | `dmg_dealt` | Maelstrom SMR ticks + ensorcelled-scepter flare + disease/mist DoT + fizzsac Pain, on creatures |
 | `dmg_taken` | best-effort sum of damage to Fizzleworth (only damage right after an explicit "...at you" marker) |
 | `dmg_per_mana` | `dmg_dealt / mana_out` — the mana-efficiency number |
 | `wounds_taken` | rank-2+ wound messages on Fizzleworth (rib shatter, nerve, etc.) |
 | `stun_events` | "You are stunned for N rounds" |
+| `knockdowns` | SMR-maneuver knockdowns on Fizzleworth ("acute sense of vulnerability", ~10s roundtime each). Sorcerers defend maneuvers badly and CS/bolt spells well, so this is the real incoming-danger signal — not `dmg_taken`. |
 | `fled` | bigshot flee events |
 | `bounty_progress` | kill-bounty start -> remaining at hunt end (target creature only, so ≤ `kills`) |
 

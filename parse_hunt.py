@@ -42,15 +42,17 @@ sym_mana_casts = len(re.findall(r"\]>symbol of mana\b", txt))
 # ---------------------------------------------------------------- mana
 # mana_out: confirmed casts (landed the "gesture"/effect line) * cost, so a
 # fizzled prep doesn't count. mana_in: explicit "N mana surge into you"
-# (sac4mana's sacrifice); Symbol of Mana gives no number in the log -- see
-# sym_mana_casts and the notes column.
+# (sac4mana's sacrifice) + a flat 50 per Symbol of Mana (the game logs no
+# number; Fizzleworth's Symbol of Mana is always a 50-point refill).
+SYMBOL_OF_MANA = 50
 web_conf    = len(re.findall(r"Cloudy wisps swirl about", txt))
 mael_conf   = len(re.findall(r"The winds form into a sinister vortex surrounding", txt))
 tether_conf = len(re.findall(r"Cracks form in the air around", txt))
 pain_conf   = len(re.findall(r"melding the spiritual and elemental powers by sheer force of will into Pain", txt))
 mana_out = (web_conf*COST["web"] + mael_conf*COST["maelstrom"]
             + tether_conf*COST["tether"] + pain_conf*COST["pain"])
-mana_in = sum(int(x) for x in re.findall(r"feel (\d+) mana surge into you", txt))
+mana_in = (sum(int(x) for x in re.findall(r"feel (\d+) mana surge into you", txt))
+           + SYMBOL_OF_MANA * sym_mana_casts)
 
 # ---------------------------------------------------------------- damage
 CREATURE = re.compile(
@@ -108,6 +110,11 @@ passes  = len(re.findall(r"Lich: custom/Fizzleworth-attack-\S+ active", txt))
 stun_ev = len(re.findall(r"You are stunned for \d+ round", txt))
 wounds  = len(re.findall(r"shatters a rib|wound to your|fractures your|"
                          r"nerve damage|snaps your", txt))
+# SMR-maneuver knockdowns -- a creature pins/sweeps Fizzleworth prone, which
+# comes with "acute sense of vulnerability" and a 10s roundtime. Sorcerers
+# defend these badly (low maneuver defense) and CS/bolt attacks well, so this
+# is the number that actually reflects incoming danger.
+knockdowns = txt.count("acute sense of vulnerability")
 fled    = len(re.findall(r"\bYou (?:flee|retreat)\b|Bigshot.*flees", txt))
 kr = [int(x) for x in re.findall(r"You have (\d+) kills remaining", txt)]
 bounty = f"{kr[0]+1} -> {kr[-1]} left" if kr else ""
@@ -117,5 +124,5 @@ row = [date, logfile.split("/")[-1], variant, area, hunt_type, duration,
        kills, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
        mana_out, mana_in, dealt, taken, dpm,
-       wounds, stun_ev, fled, bounty]
+       wounds, stun_ev, knockdowns, fled, bounty]
 print(",".join(str(x) for x in row))
