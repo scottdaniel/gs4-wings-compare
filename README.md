@@ -27,21 +27,25 @@ Plan: 5 hunts each variant, same area/bounty type where possible.
 | column | meaning |
 |---|---|
 | `duration` | bigshot's reported "Last Hunt" time (active hunting, not travel) |
-| `kills` | count of undead soul-departures ("rises into the heavens") |
+| `kills` | undead soul-departures ("rises into the heavens") + non-undead corpses bigshot looted ("You search the &lt;creature&gt;") |
 | `deaths` | Fizzleworth deaths ("You are dead!") |
 | `attack_passes` | times bigshot invoked the attack script (one decision each) |
-| `web_casts` / `maelstrom_casts` / `tether_casts` | `incant 118` / `cast #id` (710) / `incant 706` sent |
-| `dmg_dealt` | sum of Maelstrom SMR ticks + ensorcelled-scepter flare + disease/mist DoT on creatures |
-| `dmg_taken` | best-effort sum of damage to Fizzleworth (strict incoming attribution) |
+| `web_casts` / `maelstrom_casts` / `tether_casts` / `pain_casts` | `incant 118` / `prep 710` / `incant\|prep 706` / `prep\|prepare 711` command sends, from **any** script in the window (attack-* and fizzsac) |
+| `symbol_mana_casts` | `symbol of mana` sends (bigshot casts it; the game logs no mana amount) |
+| `mana_out` | confirmed casts only, priced at targeted cost (Web 5, Maelstrom 10, Tether 6, Pain 11) |
+| `mana_in` | explicit "N mana surge into you" (sac4mana's `sacrifice mana`). Does **not** include Symbol of Mana (unlogged) or natural regen. |
+| `dmg_dealt` | Maelstrom SMR ticks + ensorcelled-scepter flare + disease/mist DoT + fizzsac Pain, on creatures |
+| `dmg_taken` | best-effort sum of damage to Fizzleworth (only damage right after an explicit "...at you" marker) |
+| `dmg_per_mana` | `dmg_dealt / mana_out` — the mana-efficiency number |
 | `wounds_taken` | rank-2+ wound messages on Fizzleworth (rib shatter, nerve, etc.) |
 | `stun_events` | "You are stunned for N rounds" |
 | `fled` | bigshot flee events |
-| `bounty_progress` | kill-bounty start -> remaining at hunt end |
+| `bounty_progress` | kill-bounty start -> remaining at hunt end (target creature only, so ≤ `kills`) |
 
 **Caveats**: `dmg_dealt` is inflated when mobs escape and get re-hit (the Den of
-Rot pestilent visions submerge/resurface constantly). `dmg_taken` is
-approximate — GS4 damage flavor text doesn't cleanly distinguish "wound to
-right arm" on the player vs on a creature; the parser attributes only damage
-that follows an explicit "... at you" style marker. Treat `kills`, `deaths`,
+Rot pestilent visions / incubi submerge and resurface constantly). `dmg_taken`
+is approximate — GS4 damage flavor text doesn't cleanly distinguish "wound to
+right arm" on the player vs on a creature, so the parser only counts damage
+that follows an explicit "...at you" style marker. Treat `kills`, `deaths`,
 `wounds_taken`, `stun_events`, `fled`, and the cast counts as the hard numbers;
-the two damage sums as directional.
+the damage sums (and `dmg_per_mana`) as directional.
