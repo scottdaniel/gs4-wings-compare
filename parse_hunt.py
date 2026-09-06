@@ -68,11 +68,15 @@ mael_casts   = len(re.findall(r"\]>prep 710\b", txt))
 tether_casts = len(re.findall(r"\]>(?:incant|prep|prepare) 706\b", txt))
 pain_casts   = len(re.findall(r"\]>(?:incant|prep|prepare) 711\b", txt))
 sym_mana_casts = len(re.findall(r"\]>symbol of mana\b", txt))
-# Fizzleworth-attack-eye variant: Corrupt Essence / Grasp of the Grave / Dark
-# Catalyst. 0 for base and wing.
+# Fizzleworth-attack-cat variant: Corrupt Essence / Grasp of the Grave / Dark
+# Catalyst. 0 for base and wing. (Pain 711 for inciters lands in pain_casts,
+# and ;reanim's Pain+Animate cast via Spell#cast so they don't show a `]>`
+# echo -- reanim_runs counts the script invocations instead.)
 corrupt_casts  = len(re.findall(r"\]>(?:incant|cast) 703\b", txt))
 grasp_casts    = len(re.findall(r"\]>(?:incant|cast) 709\b", txt))
 catalyst_casts = len(re.findall(r"\]>(?:incant|cast) 719\b", txt))
+reanim_runs    = len(re.findall(r"Lich: custom/reanim active|Lich: reanim active", txt))
+animate_casts  = len(re.findall(r"Animate Dead|animate the (?:corpse|body|remains)|rises to serve|shambles to its feet", txt))
 
 # ---------------------------------------------------------------- mana
 # mana_out: confirmed casts (landed the "gesture"/effect line) * cost, so a
@@ -86,7 +90,7 @@ web_conf    = len(re.findall(r"Cloudy wisps swirl about (?:a |an |the )", txt))
 mael_conf   = len(re.findall(r"The winds form into a sinister vortex surrounding", txt))
 tether_conf = len(re.findall(r"Cracks form in the air around", txt))
 pain_conf   = len(re.findall(r"melding the spiritual and elemental powers by sheer force of will into Pain", txt))
-# eye variant confirmed casts -- markers TENTATIVE, verify against a real eye
+# cat variant confirmed casts -- markers TENTATIVE, verify against a real cat
 # log. Fall back to the command-send count if the marker never matched.
 corrupt_conf  = len(re.findall(r"blood red haze eddies and swirls around (?:a |an |the )", txt)) or corrupt_casts
 grasp_conf    = len(re.findall(r"grotesque limbs .* burst (?:up )?out of the (?:floor|ground)", txt)) or grasp_casts
@@ -195,7 +199,7 @@ row = [date, logfile.split("/")[-1], variant, martial_prowess, start_mind, area,
        duration, dur_min,
        kills, kpm, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
-       corrupt_casts, grasp_casts, catalyst_casts,
+       corrupt_casts, grasp_casts, catalyst_casts, reanim_runs, animate_casts,
        mana_out, mana_in, dealt, taken, dpm,
        wounds, stun_ev, knockdowns, webbed, fled,
        wing_tap, wing_knock, wing_fold, wing_push, wing_aegis,
