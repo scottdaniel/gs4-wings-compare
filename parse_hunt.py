@@ -7,6 +7,12 @@ Usage: parse_hunt.py <logfile> <start> <end> <date> <variant> <area> <hunt_type>
 first "Fizzleworth-attack-* active" to just past the last
 "Fizzleworth-attack-* has exited" (before the rest/travel-out).
 <duration> is bigshot's own "Last Hunt" figure.
+
+`martial_prowess` (moonstone cube / spell 1705, extra SMR/maneuver defense) is
+auto-detected: yes if a "moonstone cube ... disintegrates" rub happened in the
+~2500 lines before the window and 1705 wasn't seen to fade before it starts.
+It's an experimental confound -- H1 ran without it, H2-H5 with -- so keep it
+consistent across the variant you're comparing.
 """
 import re, sys
 
@@ -15,8 +21,17 @@ logfile, start, end, date, variant, area, hunt_type, duration = (
     sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7], sys.argv[8])
 
 with open(logfile, encoding="utf-8", errors="replace") as fh:
-    win = fh.readlines()[start-1:end]
+    all_lines = fh.readlines()
+win = all_lines[start-1:end]
 txt = "".join(win)
+
+# moonstone cube (Martial Prowess / 1705): a single-use rub, lasts ~1 hunt.
+# Active for this hunt if it was rubbed in the run-up (last ~2500 lines before
+# the window) and not also rubbed again inside the window (that'd be the NEXT
+# hunt's prep bleeding in).
+pre = "".join(all_lines[max(0, start-1-2500):start-1])
+martial_prowess = "yes" if ("You rub a solid moonstone cube" in pre
+                            and "You rub a solid moonstone cube" not in txt) else "no"
 
 # ---------------------------------------------------------------- spell costs
 # Targeted casts, from GS4 spell data (see Fizzleworth-attack-wing.lic header).
@@ -136,7 +151,7 @@ kr = [int(x) for x in re.findall(r"You have (\d+) kills remaining", txt)]
 bounty = f"{kr[0]+1} -> {kr[-1]} left" if kr else ""
 dpm = round(dealt / mana_out, 2) if mana_out else ""
 
-row = [date, logfile.split("/")[-1], variant, area, hunt_type, duration,
+row = [date, logfile.split("/")[-1], variant, martial_prowess, area, hunt_type, duration,
        kills, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
        mana_out, mana_in, dealt, taken, dpm,

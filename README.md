@@ -26,6 +26,7 @@ Plan: 5 hunts each variant, same area/bounty type where possible.
 
 | column | meaning |
 |---|---|
+| `martial_prowess` | was the moonstone cube (spell 1705, extra SMR / maneuver defense) rubbed and active for this hunt. **Confound** — H1 ran without it, H2 onward with it. Auto-detected from a pre-window "rub a solid moonstone cube". Keep it consistent across whatever you're comparing. |
 | `duration` | bigshot's reported "Last Hunt" time (active hunting, not travel) |
 | `kills` | undead soul-departures ("rises into the heavens") + non-undead corpses bigshot looted ("You search the &lt;creature&gt;") |
 | `deaths` | Fizzleworth deaths ("You are dead!") |
