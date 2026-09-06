@@ -134,6 +134,18 @@ for s in (l.rstrip("\n") for l in win):
             dealt += n
         continue
 
+# ---------------------------------------------------------------- wing kit
+# All 0 for the `base` variant (no wing code). For `wing`: which Energy Wings
+# verb fired, by command send. tap = Luminous Flight (evade buff); knock =
+# Blast of Brilliance (<=5-target AOE); fold = Blinding Reprisal (<=10-target
+# AOE); push = Wings of Warding (group DS/TD buff); aegis = Prismatic Aegis
+# (reactive shield, fired by Fizzleworth-wingguard on an enemy prep).
+wing_tap   = len(re.findall(r"\]>tap my wing pin",   txt))
+wing_knock = len(re.findall(r"\]>knock my wing pin", txt))
+wing_fold  = len(re.findall(r"\]>fold my wing pin",  txt))
+wing_push  = len(re.findall(r"\]>push my wing pin",  txt))
+wing_aegis = len(re.findall(r"\]>pull my wing pin",  txt))
+
 # ---------------------------------------------------------------- misc
 passes  = len(re.findall(r"Lich: custom/Fizzleworth-attack-\S+ active", txt))
 stun_ev = len(re.findall(r"You are stunned for \d+ round", txt))
@@ -155,5 +167,7 @@ row = [date, logfile.split("/")[-1], variant, martial_prowess, area, hunt_type, 
        kills, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
        mana_out, mana_in, dealt, taken, dpm,
-       wounds, stun_ev, knockdowns, webbed, fled, bounty]
+       wounds, stun_ev, knockdowns, webbed, fled,
+       wing_tap, wing_knock, wing_fold, wing_push, wing_aegis,
+       bounty]
 print(",".join(str(x) for x in row))
