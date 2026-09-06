@@ -31,21 +31,31 @@ def hms_to_min(s):
 
 dur_min = hms_to_min(duration)
 
-# Mind saturation is "Field Exp: N/1220". bigshot only reads it (via `exp`)
-# while resting, so we can usually get the value going INTO the hunt (last
-# reading before the window) but rarely the peak at the end. Start it from
-# empty for a clean comparison -- otherwise this records where it actually was.
-_pre = "".join(all_lines[:start-1])
-_sm = re.findall(r"Field Exp: ([\d,]+)/1,?220", _pre)
-start_mind = _sm[-1].replace(",", "") if _sm else "?"
+# Mind saturation is "Field Exp: N/1206-1220" (the cap drifts a little). Since
+# 2026-09-06 Fizzleworth-prep sends `exp` right before the hunt, so there's a
+# fresh reading just above the window. Older logs only have readings taken
+# during rest. Take the last reading before the window, but call it "?" if it
+# reads HIGH (> 300) *and* bigshot was still resting after it -- a stale high
+# value means the real starting mind was lower. A stale low value is fine:
+# mind only decreases while resting.
+_pre = all_lines[:start-1]
+_sm = [(i, m) for i, ln in enumerate(_pre)
+       for m in re.findall(r"Field Exp: ([\d,]+)/1,?2\d\d", ln)]
+if _sm:
+    _idx, _val = _sm[-1]
+    _n = int(_val.replace(",", ""))
+    _after = "".join(_pre[_idx+1:])
+    stale_high = _n > 300 and re.search(r"resting because|isn't hunting because|must rest", _after)
+    start_mind = "?" if stale_high else str(_n)
+else:
+    start_mind = "?"
 
-# moonstone cube (Martial Prowess / 1705): a single-use rub, lasts ~1 hunt.
-# Active for this hunt if it was rubbed in the run-up (last ~2500 lines before
-# the window) and not also rubbed again inside the window (that'd be the NEXT
-# hunt's prep bleeding in).
+# moonstone cube (Martial Prowess / 1705): a single-use rub ("solid"/"heavy"/
+# any grade), lasts ~1 hunt. Active for this hunt if it was rubbed in the
+# run-up and not re-rubbed inside the window (that'd be the NEXT hunt's prep).
+RUB = r"You rub a \w+ moonstone cube"
 pre = "".join(all_lines[max(0, start-1-2500):start-1])
-martial_prowess = "yes" if ("You rub a solid moonstone cube" in pre
-                            and "You rub a solid moonstone cube" not in txt) else "no"
+martial_prowess = "yes" if (re.search(RUB, pre) and not re.search(RUB, txt)) else "no"
 
 # ---------------------------------------------------------------- spell costs
 # Targeted casts, from GS4 spell data (see Fizzleworth-attack-wing.lic header).
