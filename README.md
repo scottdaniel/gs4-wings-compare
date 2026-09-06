@@ -9,6 +9,11 @@ Energy Wings kit, to decide whether the wings are worth running.
   no wings, wingguard killed).
 
 Plan: 5 hunts each variant, same area/bounty type where possible.
+**Rest to empty mind before every hunt** — hunts that ended on "fried" (mind
+saturation, most of them) run longer and rack up more total kills the emptier
+the mind was at the start. base H4/H5 were started ~10% full and are NOT
+comparable to the from-empty hunts on `duration` / raw `kills`; use
+`kills_per_min` and the per-encounter defensive columns for those.
 
 ## Cost context
 
@@ -54,7 +59,9 @@ convenience and a marginal maneuver save.
 | column | meaning |
 |---|---|
 | `martial_prowess` | was the moonstone cube (spell 1705, extra SMR / maneuver defense) rubbed and active for this hunt. **Confound** — H1 ran without it, H2 onward with it. Auto-detected from a pre-window "rub a solid moonstone cube". Keep it consistent across whatever you're comparing. |
-| `duration` | bigshot's reported "Last Hunt" time (active hunting, not travel) |
+| `start_mind` | mind saturation (`Field Exp: N/1220`) going into the hunt, from the last reading before the window. `?` = not logged pre-hunt. **Confound** — see the note at the top; more headroom = longer hunt. |
+| `duration` / `duration_min` | bigshot's reported "Last Hunt" time (active hunting, not travel) |
+| `kills_per_min` | `kills / duration_min` — the rate metric that survives an inconsistent `start_mind` |
 | `kills` | undead soul-departures ("rises into the heavens") + non-undead corpses bigshot looted ("You search the &lt;creature&gt;") |
 | `deaths` | Fizzleworth deaths ("You are dead!") |
 | `attack_passes` | times bigshot invoked the attack script (one decision each) |

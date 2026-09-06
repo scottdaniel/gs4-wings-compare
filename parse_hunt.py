@@ -25,6 +25,20 @@ with open(logfile, encoding="utf-8", errors="replace") as fh:
 win = all_lines[start-1:end]
 txt = "".join(win)
 
+def hms_to_min(s):
+    m = re.match(r"(?:(\d+)m)?\s*(?:(\d+)s)?", s.strip())
+    return round(int(m.group(1) or 0) + int(m.group(2) or 0) / 60, 2) if m else 0
+
+dur_min = hms_to_min(duration)
+
+# Mind saturation is "Field Exp: N/1220". bigshot only reads it (via `exp`)
+# while resting, so we can usually get the value going INTO the hunt (last
+# reading before the window) but rarely the peak at the end. Start it from
+# empty for a clean comparison -- otherwise this records where it actually was.
+_pre = "".join(all_lines[:start-1])
+_sm = re.findall(r"Field Exp: ([\d,]+)/1,?220", _pre)
+start_mind = _sm[-1].replace(",", "") if _sm else "?"
+
 # moonstone cube (Martial Prowess / 1705): a single-use rub, lasts ~1 hunt.
 # Active for this hunt if it was rubbed in the run-up (last ~2500 lines before
 # the window) and not also rubbed again inside the window (that'd be the NEXT
@@ -162,9 +176,11 @@ fled    = len(re.findall(r"\bYou (?:flee|retreat)\b|Bigshot.*flees", txt))
 kr = [int(x) for x in re.findall(r"You have (\d+) kills remaining", txt)]
 bounty = f"{kr[0]+1} -> {kr[-1]} left" if kr else ""
 dpm = round(dealt / mana_out, 2) if mana_out else ""
+kpm = round(kills / dur_min, 2) if dur_min else ""
 
-row = [date, logfile.split("/")[-1], variant, martial_prowess, area, hunt_type, duration,
-       kills, deaths, passes,
+row = [date, logfile.split("/")[-1], variant, martial_prowess, start_mind, area, hunt_type,
+       duration, dur_min,
+       kills, kpm, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
        mana_out, mana_in, dealt, taken, dpm,
        wounds, stun_ev, knockdowns, webbed, fled,
