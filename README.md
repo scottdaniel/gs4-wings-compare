@@ -3,10 +3,16 @@
 Comparing Fizzleworth (Sorcerer) hunt statistics **with** vs **without** the
 Energy Wings kit, to decide whether the wings are worth running.
 
-- `variant = wing` — `Fizzleworth-attack-wing.lic` (sorcerer rotation + Energy
-  Wings AOE/defensive tap + `Fizzleworth-wingguard.lic` reactive pull).
-- `variant = base` — `Fizzleworth-attack-base.lic` (identical sorcerer rotation,
-  no wings, wingguard killed).
+- `variant = base` — `Fizzleworth-attack-base.lic` — Web 118 → Energy Maelstrom
+  710 → Tenebrous Tether 706. No wings.
+- `variant = wing` — `Fizzleworth-attack-wing.lic` — the base rotation plus the
+  Energy Wings kit (AOE / defensive tap) and `Fizzleworth-wingguard.lic`
+  (reactive Prismatic Aegis / Crawling Shadow on enemy prep).
+- `variant = eye` — `Fizzleworth-attack-eye.lic` — completely different:
+  Corrupt Essence 703 (silence caster, once/target) → Dark Catalyst 719
+  (CS-vs-TD insta-kill attempt, refunds 1–14 mana), plus Grasp of the Grave
+  709 (area knockdown) when ≥2 in the room. No wings. Experimental — expected
+  to struggle against the non-magical Ivasian inciters.
 
 Plan: 5 hunts each variant, same area/bounty type where possible.
 **Rest to empty mind before every hunt** — hunts that ended on "fried" (mind
@@ -66,6 +72,7 @@ convenience and a marginal maneuver save.
 | `deaths` | Fizzleworth deaths ("You are dead!") |
 | `attack_passes` | times bigshot invoked the attack script (one decision each) |
 | `web_casts` / `maelstrom_casts` / `tether_casts` / `pain_casts` | `incant 118` / `prep 710` / `incant\|prep 706` / `prep\|prepare 711` command sends, from **any** script in the window (attack-* and fizzsac) |
+| `corrupt_casts` / `grasp_casts` / `catalyst_casts` | `eye` variant only — `incant 703` / `709` / `719` sends. 0 for base/wing. |
 | `symbol_mana_casts` | `symbol of mana` sends (bigshot casts it; the game logs no mana amount) |
 | `mana_out` | confirmed casts only, priced at targeted cost (Web 5, Maelstrom 10, Tether 6, Pain 11) |
 | `mana_in` | "N mana surge into you" (sac4mana's `sacrifice mana`) + 50 per `symbol_mana_casts` (Symbol of Mana is a flat 50-point refill, unlogged). Excludes natural regen. |

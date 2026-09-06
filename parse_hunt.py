@@ -49,7 +49,8 @@ martial_prowess = "yes" if ("You rub a solid moonstone cube" in pre
 
 # ---------------------------------------------------------------- spell costs
 # Targeted casts, from GS4 spell data (see Fizzleworth-attack-wing.lic header).
-COST = {"web": 5, "maelstrom": 10, "tether": 6, "pain": 11}
+COST = {"web": 5, "maelstrom": 10, "tether": 6, "pain": 11,
+        "corrupt": 3, "grasp": 9, "catalyst": 19}
 
 # ---------------------------------------------------------------- kills
 # Undead (pestilent vision) release a soul; everything else bigshot loots as a
@@ -67,6 +68,11 @@ mael_casts   = len(re.findall(r"\]>prep 710\b", txt))
 tether_casts = len(re.findall(r"\]>(?:incant|prep|prepare) 706\b", txt))
 pain_casts   = len(re.findall(r"\]>(?:incant|prep|prepare) 711\b", txt))
 sym_mana_casts = len(re.findall(r"\]>symbol of mana\b", txt))
+# Fizzleworth-attack-eye variant: Corrupt Essence / Grasp of the Grave / Dark
+# Catalyst. 0 for base and wing.
+corrupt_casts  = len(re.findall(r"\]>(?:incant|cast) 703\b", txt))
+grasp_casts    = len(re.findall(r"\]>(?:incant|cast) 709\b", txt))
+catalyst_casts = len(re.findall(r"\]>(?:incant|cast) 719\b", txt))
 
 # ---------------------------------------------------------------- mana
 # mana_out: confirmed casts (landed the "gesture"/effect line) * cost, so a
@@ -80,8 +86,15 @@ web_conf    = len(re.findall(r"Cloudy wisps swirl about (?:a |an |the )", txt))
 mael_conf   = len(re.findall(r"The winds form into a sinister vortex surrounding", txt))
 tether_conf = len(re.findall(r"Cracks form in the air around", txt))
 pain_conf   = len(re.findall(r"melding the spiritual and elemental powers by sheer force of will into Pain", txt))
+# eye variant confirmed casts -- markers TENTATIVE, verify against a real eye
+# log. Fall back to the command-send count if the marker never matched.
+corrupt_conf  = len(re.findall(r"blood red haze eddies and swirls around (?:a |an |the )", txt)) or corrupt_casts
+grasp_conf    = len(re.findall(r"grotesque limbs .* burst (?:up )?out of the (?:floor|ground)", txt)) or grasp_casts
+catalyst_conf = len(re.findall(r"drawing forth the elemental energies|Dark Catalyst|converting .* mana into", txt)) or catalyst_casts
 mana_out = (web_conf*COST["web"] + mael_conf*COST["maelstrom"]
-            + tether_conf*COST["tether"] + pain_conf*COST["pain"])
+            + tether_conf*COST["tether"] + pain_conf*COST["pain"]
+            + corrupt_conf*COST["corrupt"] + grasp_conf*COST["grasp"]
+            + catalyst_conf*COST["catalyst"])
 mana_in = (sum(int(x) for x in re.findall(r"feel (\d+) mana surge into you", txt))
            + SYMBOL_OF_MANA * sym_mana_casts)
 
@@ -182,6 +195,7 @@ row = [date, logfile.split("/")[-1], variant, martial_prowess, start_mind, area,
        duration, dur_min,
        kills, kpm, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
+       corrupt_casts, grasp_casts, catalyst_casts,
        mana_out, mana_in, dealt, taken, dpm,
        wounds, stun_ev, knockdowns, webbed, fled,
        wing_tap, wing_knock, wing_fold, wing_push, wing_aegis,
