@@ -10,6 +10,33 @@ Energy Wings kit, to decide whether the wings are worth running.
 
 Plan: 5 hunts each variant, same area/bounty type where possible.
 
+## Cost context
+
+Energy Wings run **~40,000,000 silver**. A moonstone cube (spell 1705,
+Martial Prowess — additive SMR / maneuver defense, one rub ≈ one hunt) is
+**~850 silver**. So ~47,000 cubes buy what the wings cost — on the order of a
+year of nonstop hunting.
+
+The two overlap on one thing: extra maneuver defense (the wings' Luminous
+Flight evade bonus / reactive Prismatic Aegis vs the cube's SMR bonus). On
+that axis alone the cube wins on cost by ~4 orders of magnitude, and the base
+hunts show Fizzleworth survives maneuvers fine with *or* without either
+(H1 = no cube, still 0 deaths).
+
+So the question this data has to answer is whether the wings earn 40M with the
+things the cube can't do:
+
+- **Swarm clear** — Blinding Reprisal / Blast of Brilliance hitting 5–10
+  targets at once (would show up as higher `kills`, shorter `duration`).
+- **Reactive shield with no consumable** — Prismatic Aegis on enemy prep,
+  no cube charge spent.
+- **Group utility** — Wings of Warding's party DS/TD buff.
+- **Zero upkeep / permanence** — never buy or rub anything.
+
+If the `wing` rows don't move `kills`, `duration`, or `dmg_per_mana`
+meaningfully above the cube-only `base` baseline (H2–H5), the 40M is buying
+convenience and a marginal maneuver save.
+
 ## Files
 
 - `hunts.csv` — one row per hunt. Append as logs come in.
