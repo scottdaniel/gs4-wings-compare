@@ -45,7 +45,9 @@ sym_mana_casts = len(re.findall(r"\]>symbol of mana\b", txt))
 # (sac4mana's sacrifice) + a flat 50 per Symbol of Mana (the game logs no
 # number; Fizzleworth's Symbol of Mana is always a 50-point refill).
 SYMBOL_OF_MANA = 50
-web_conf    = len(re.findall(r"Cloudy wisps swirl about", txt))
+# "about a/an/the <creature>" is Fizzleworth's Web; "about you" is a creature
+# webbing HIM -- don't price that as mana spent.
+web_conf    = len(re.findall(r"Cloudy wisps swirl about (?:a |an |the )", txt))
 mael_conf   = len(re.findall(r"The winds form into a sinister vortex surrounding", txt))
 tether_conf = len(re.findall(r"Cracks form in the air around", txt))
 pain_conf   = len(re.findall(r"melding the spiritual and elemental powers by sheer force of will into Pain", txt))
@@ -71,6 +73,13 @@ IN_ANCHOR = re.compile(
     r"\bat you!|toward you\b|jabs into you|lunges hungrily for you|"
     r"lashes at you|kicks at you|thorns suddenly grow out from the ground|"
     r"jolts your whole body|One of the thorns")
+# The vast majority of incoming attacks whiff (Fizzleworth's DS/TD is huge).
+# When an "in" sequence resolves as a miss/ward, clear the context so a
+# Maelstrom DoT tick that interleaves right after doesn't get booked as taken.
+MISS = re.compile(
+    r"A clean miss|Warded off|dissipates upon impact|but you are unaffected|"
+    r"to no effect|whacks your legs to no effect|You (?:evade|dodge)|"
+    r"manage to jump out of the way|misses you|evade the attack")
 DMG_FOR  = re.compile(r"(?:for|causing) (\d+) points of damage!")
 DMG_HITS = re.compile(r"hits for (\d+) points of damage!")
 DMG_CONT = re.compile(r"^\s*\.\.\. (\d+) points of damage!")
@@ -81,6 +90,11 @@ for s in (l.rstrip("\n") for l in win):
     ctx_age += 1
     if OUT_ANCHOR.search(s):
         ctx, ctx_age = "out", 0
+    elif MISS.search(s):
+        # a whiffed incoming attack -- clear "in", and don't let the same line
+        # re-arm it via IN_ANCHOR ("beam snakes out toward you, but dissipates")
+        if ctx == "in":
+            ctx = None
     elif IN_ANCHOR.search(s):
         ctx, ctx_age = "in", 0
     m = DMG_HITS.search(s)
@@ -115,6 +129,8 @@ wounds  = len(re.findall(r"shatters a rib|wound to your|fractures your|"
 # defend these badly (low maneuver defense) and CS/bolt attacks well, so this
 # is the number that actually reflects incoming danger.
 knockdowns = txt.count("acute sense of vulnerability")
+# a creature webs Fizzleworth (its own SMR maneuver) -- immobilizes, no damage
+webbed = txt.count("You become ensnared in thick strands of webbing")
 fled    = len(re.findall(r"\bYou (?:flee|retreat)\b|Bigshot.*flees", txt))
 kr = [int(x) for x in re.findall(r"You have (\d+) kills remaining", txt)]
 bounty = f"{kr[0]+1} -> {kr[-1]} left" if kr else ""
@@ -124,5 +140,5 @@ row = [date, logfile.split("/")[-1], variant, area, hunt_type, duration,
        kills, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
        mana_out, mana_in, dealt, taken, dpm,
-       wounds, stun_ev, knockdowns, fled, bounty]
+       wounds, stun_ev, knockdowns, webbed, fled, bounty]
 print(",".join(str(x) for x in row))

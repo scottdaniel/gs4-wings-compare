@@ -40,13 +40,19 @@ Plan: 5 hunts each variant, same area/bounty type where possible.
 | `wounds_taken` | rank-2+ wound messages on Fizzleworth (rib shatter, nerve, etc.) |
 | `stun_events` | "You are stunned for N rounds" |
 | `knockdowns` | SMR-maneuver knockdowns on Fizzleworth ("acute sense of vulnerability", ~10s roundtime each). Sorcerers defend maneuvers badly and CS/bolt spells well, so this is the real incoming-danger signal — not `dmg_taken`. |
+| `webbed_by_enemy` | times a creature's Web maneuver ensnared Fizzleworth ("You become ensnared in thick strands of webbing"). Immobilize, no damage. |
 | `fled` | bigshot flee events |
 | `bounty_progress` | kill-bounty start -> remaining at hunt end (target creature only, so ≤ `kills`) |
 
 **Caveats**: `dmg_dealt` is inflated when mobs escape and get re-hit (the Den of
 Rot pestilent visions / incubi submerge and resurface constantly). `dmg_taken`
 is approximate — GS4 damage flavor text doesn't cleanly distinguish "wound to
-right arm" on the player vs on a creature, so the parser only counts damage
-that follows an explicit "...at you" style marker. Treat `kills`, `deaths`,
-`wounds_taken`, `stun_events`, `fled`, and the cast counts as the hard numbers;
-the damage sums (and `dmg_per_mana`) as directional.
+right arm" on the player vs on a creature. The parser only books damage as
+taken when it directly follows a confirmed-contact marker ("...hits for N",
+"jabs into you", "jolts your whole body", etc.), and it clears the "incoming"
+context the moment a whiff shows up ("A clean miss", "Warded off", "dissipates
+upon impact", "you are unaffected", "you evade", …) so a Maelstrom DoT tick
+that interleaves right after a missed enemy attack isn't misattributed. Treat
+`kills`, `deaths`, `wounds_taken`, `stun_events`, `knockdowns`,
+`webbed_by_enemy`, `fled`, and the cast counts as the hard numbers; the damage
+sums (and `dmg_per_mana`) as directional.
