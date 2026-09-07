@@ -50,6 +50,19 @@ if _sm:
 else:
     start_mind = "?"
 
+# end_mind: first Field Exp reading after the window (bigshot checks `exp` early
+# in the rest). It's already decaying from the true peak, so it's a lower bound
+# -- for hunts that ended "fried" the real end was ~the cap (1206-1220).
+# mind_gained = end - start is the field exp the hunt cost, which normalizes
+# kills/duration for an inconsistent starting mind (kills_per_100mind).
+_post = all_lines[end:end+1500]
+_em = re.findall(r"Field Exp: ([\d,]+)/1,?2\d\d", "".join(_post))
+end_mind = _em[0].replace(",", "") if _em else "?"
+if start_mind.isdigit() and end_mind.isdigit():
+    mind_gained = int(end_mind) - int(start_mind)
+else:
+    mind_gained = ""
+
 # moonstone cube (Martial Prowess / 1705): a single-use rub ("solid"/"heavy"/
 # any grade), lasts ~1 hunt. Active for this hunt if it was rubbed in the
 # run-up and not re-rubbed inside the window (that'd be the NEXT hunt's prep).
@@ -123,12 +136,17 @@ OUT_ANCHOR = re.compile(
     r"flames surrounding .* continue to burn|sickly green miasma around|"
     r"Pus-filled sores erupt|Boils rupture|pockmarks appear|"
     r"virulent green mist (?:seeps|passes through|surrounding)|"
+    r"You exhale a virulent green mist toward|"
     r"shudders and twists in intense pain|contorts in excruciating agony|"
     r"You gesture at|The (?:hail|rocks|winds|bolts|heat) ")
 IN_ANCHOR = re.compile(
     r"\bat you!|toward you\b|jabs into you|lunges hungrily for you|"
     r"lashes at you|kicks at you|thorns suddenly grow out from the ground|"
-    r"jolts your whole body|One of the thorns")
+    r"jolts your whole body|One of the thorns|beneath (?:you|your feet)|"
+    r"stalagmites burst from the ground")
+# player-only confirmation that the LAST damage line landed on Fizzleworth
+# (creatures get "is stunned", only the player gets "You are stunned for N").
+FIZZ_HIT = re.compile(r"You are stunned for \d+ round")
 # The vast majority of incoming attacks whiff (Fizzleworth's DS/TD is huge).
 # When an "in" sequence resolves as a miss/ward, clear the context so a
 # Maelstrom DoT tick that interleaves right after doesn't get booked as taken.
@@ -141,6 +159,7 @@ DMG_HITS = re.compile(r"hits for (\d+) points of damage!")
 DMG_CONT = re.compile(r"^\s*\.\.\. (\d+) points of damage!")
 
 dealt = taken = 0
+last = None            # (value, "dealt"|"taken") of the most recent damage line
 ctx, ctx_age = None, 99
 for s in (l.rstrip("\n") for l in win):
     ctx_age += 1
@@ -153,26 +172,35 @@ for s in (l.rstrip("\n") for l in win):
             ctx = None
     elif IN_ANCHOR.search(s):
         ctx, ctx_age = "in", 0
+
+    # "You are stunned for N rounds" -> the last damage line was on Fizzleworth;
+    # move it if we'd booked it as dealt.
+    if FIZZ_HIT.search(s) and last and last[1] == "dealt":
+        dealt -= last[0]; taken += last[0]; last = (last[0], "taken")
+
     m = DMG_HITS.search(s)
     if m:
-        taken += int(m.group(1)); ctx, ctx_age = "in", 0; continue
+        v = int(m.group(1)); taken += v; last = (v, "taken")
+        ctx, ctx_age = "in", 0; continue
     m = DMG_FOR.search(s)
     if m:
         n = int(m.group(1))
         if CREATURE.search(s):
-            dealt += n; ctx, ctx_age = "out", 0
+            dealt += n; last = (n, "dealt"); ctx, ctx_age = "out", 0
         elif ctx == "in" and ctx_age <= 3:
-            taken += n
+            taken += n; last = (n, "taken")
         else:
-            dealt += n; ctx, ctx_age = "out", 0
+            dealt += n; last = (n, "dealt"); ctx, ctx_age = "out", 0
         continue
     m = DMG_CONT.search(s)
     if m:
         n = int(m.group(1))
         if ctx == "in" and ctx_age <= 3:
-            taken += n
+            taken += n; last = (n, "taken")
         elif ctx == "out":
-            dealt += n
+            dealt += n; last = (n, "dealt")
+        else:
+            last = (n, "?")
         continue
 
 # ---------------------------------------------------------------- wing kit
@@ -204,10 +232,16 @@ kr = [int(x) for x in re.findall(r"You have (\d+) kills remaining", txt)]
 bounty = f"{kr[0]+1} -> {kr[-1]} left" if kr else ""
 dpm = round(dealt / mana_out, 2) if mana_out else ""
 kpm = round(kills / dur_min, 2) if dur_min else ""
+# kills per 100 field-exp the hunt cost -- the rate metric that doesn't care
+# how full the mind was at the start (answers the user's point: just subtract
+# start from end). end_mind is a decayed lower bound, so this is an *upper*
+# bound on efficiency; still comparable between hunts read the same way.
+kpe = round(kills / mind_gained * 100, 2) if isinstance(mind_gained, int) and mind_gained > 0 else ""
 
-row = [date, logfile.split("/")[-1], variant, martial_prowess, start_mind, area, hunt_type,
+row = [date, logfile.split("/")[-1], variant, martial_prowess,
+       start_mind, end_mind, mind_gained, area, hunt_type,
        duration, dur_min,
-       kills, kpm, deaths, passes,
+       kills, kpm, kpe, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
        corrupt_casts, grasp_casts, catalyst_casts, reanim_runs, animate_casts,
        mana_out, mana_in, dealt, taken, dpm,

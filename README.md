@@ -18,11 +18,32 @@ Energy Wings kit, to decide whether the wings are worth running.
   Flee at 4. Experimental.
 
 Plan: 5 hunts each variant, same area/bounty type where possible.
-**Rest to empty mind before every hunt** — hunts that ended on "fried" (mind
-saturation, most of them) run longer and rack up more total kills the emptier
-the mind was at the start. base H4/H5 were started ~10% full and are NOT
-comparable to the from-empty hunts on `duration` / raw `kills`; use
-`kills_per_min` and the per-encounter defensive columns for those.
+
+Hunts that end on "fried" run longer the emptier the mind at the start, so raw
+`kills` / `duration` aren't comparable across an inconsistent `start_mind`.
+Use **`kills_per_100mind`** (`kills / (end_mind − start_mind) × 100`) — it
+divides out the starting condition.
+
+## Result (base n=5, wing n=6)
+
+| | base | wing |
+|---|---|---|
+| deaths | 0 | 0 |
+| dmg taken | 0 (once 40, no cube) | 0 (once ~15–30, once ~5) |
+| knockdowns/webs per hunt | ~0.6 | ~0.2 |
+| kills_per_100mind | ~1.98 | ~1.85 |
+| sac4mana mana harvest | usual | **0 of 6** |
+
+The wings changed nothing that mattered. Defence: this content doesn't
+threaten Fizzleworth with or without them (both variants take ~0 damage; the
+one wing hunt that took a real hit was one where the mind was barely rested
+and an incubus field effect got through — nothing the wings prevent).
+Efficiency: `kills_per_100mind` is a hair *lower* with wings (more roundtime
+per kill). Cost: every wing hunt failed to get a sac4mana mana harvest
+(the wing verbs keep the attack script busy enough that sac4mana's
+"don't harvest mid-fight" guard never opens), and 3 of 6 ended out of mana.
+
+Verdict: **not worth 40M for this content.** Selling the wings.
 
 ## Cost context
 
@@ -68,9 +89,10 @@ convenience and a marginal maneuver save.
 | column | meaning |
 |---|---|
 | `martial_prowess` | was the moonstone cube (spell 1705, extra SMR / maneuver defense) rubbed and active for this hunt. **Confound** — H1 ran without it, H2 onward with it. Auto-detected from a pre-window "rub a solid moonstone cube". Keep it consistent across whatever you're comparing. |
-| `start_mind` | mind saturation (`Field Exp: N/1220`) going into the hunt, from the last reading before the window. `?` = not logged pre-hunt. **Confound** — see the note at the top; more headroom = longer hunt. |
+| `start_mind` / `end_mind` / `mind_gained` | field exp (`Field Exp: N/~1210`) at hunt start (from prep's `exp`, older logs use the last rest reading) and at the first rest reading after; `mind_gained` = end − start = the field exp the hunt actually cost. `end_mind` is a decayed lower bound (bigshot reads `exp` a bit into the rest), so `mind_gained` is a slight underestimate. |
 | `duration` / `duration_min` | bigshot's reported "Last Hunt" time (active hunting, not travel) |
-| `kills_per_min` | `kills / duration_min` — the rate metric that survives an inconsistent `start_mind` |
+| `kills_per_min` | `kills / duration_min` |
+| `kills_per_100mind` | `kills / mind_gained × 100` — the efficiency metric that doesn't care how full the mind was at the start (subtract start exp from end exp). This is the one to compare across hunts. |
 | `kills` | undead soul-departures ("rises into the heavens") + non-undead corpses bigshot looted ("You search the &lt;creature&gt;") |
 | `deaths` | Fizzleworth deaths ("You are dead!") |
 | `attack_passes` | times bigshot invoked the attack script (one decision each) |
