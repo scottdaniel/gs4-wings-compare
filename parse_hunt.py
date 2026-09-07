@@ -232,16 +232,19 @@ kr = [int(x) for x in re.findall(r"You have (\d+) kills remaining", txt)]
 bounty = f"{kr[0]+1} -> {kr[-1]} left" if kr else ""
 dpm = round(dealt / mana_out, 2) if mana_out else ""
 kpm = round(kills / dur_min, 2) if dur_min else ""
-# kills per 100 field-exp the hunt cost -- the rate metric that doesn't care
-# how full the mind was at the start (answers the user's point: just subtract
-# start from end). end_mind is a decayed lower bound, so this is an *upper*
-# bound on efficiency; still comparable between hunts read the same way.
+# exp_per_min = field exp the hunt cost / hunt minutes -- the leveling-speed
+# metric. mind_gained = end - start; end_mind is a decayed lower bound (bigshot
+# reads exp a bit into the rest), so for "fried" hunts this slightly
+# understates it. duration is bigshot's "Last Hunt", which excludes any
+# sac4mana harvest time -- so a hunt whose window includes a harvest reads a
+# bit fast. kills_per_100mind kept for reference.
+epm = round(mind_gained / dur_min, 1) if isinstance(mind_gained, int) and mind_gained > 0 and dur_min else ""
 kpe = round(kills / mind_gained * 100, 2) if isinstance(mind_gained, int) and mind_gained > 0 else ""
 
 row = [date, logfile.split("/")[-1], variant, martial_prowess,
        start_mind, end_mind, mind_gained, area, hunt_type,
        duration, dur_min,
-       kills, kpm, kpe, deaths, passes,
+       kills, kpm, epm, kpe, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
        corrupt_casts, grasp_casts, catalyst_casts, reanim_runs, animate_casts,
        mana_out, mana_in, dealt, taken, dpm,

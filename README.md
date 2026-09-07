@@ -19,31 +19,40 @@ Energy Wings kit, to decide whether the wings are worth running.
 
 Plan: 5 hunts each variant, same area/bounty type where possible.
 
-Hunts that end on "fried" run longer the emptier the mind at the start, so raw
-`kills` / `duration` aren't comparable across an inconsistent `start_mind`.
-Use **`kills_per_100mind`** (`kills / (end_mind − start_mind) × 100`) — it
-divides out the starting condition.
+Primary metric: **`exp_per_min`** = `(end_mind − start_mind) / duration_min`
+(field exp the hunt earned, per minute of hunt) — leveling speed. `duration`
+is bigshot's "Last Hunt" (excludes sac4mana harvest time); `end_mind` is a
+decayed reading so "fried" hunts underestimate a little.
 
-## Result (base n=5, wing n=6)
+## Result (base n=5, wing n=6; usable exp_per_min: base n=3, wing n=3-4)
 
 | | base | wing |
 |---|---|---|
-| deaths | 0 | 0 |
-| dmg taken | 0 (once 40, no cube) | 0 (once ~15–30, once ~5) |
-| knockdowns/webs per hunt | ~0.6 | ~0.2 |
-| kills_per_100mind | ~1.98 | ~1.85 |
+| deaths | 0 / 5 | 0 / 6 |
+| dmg taken | ~0 (once 40, no cube) | ~0 (once ~15–30, once ~5) |
+| knockdowns+webs / hunt | ~0.6 | ~0.2 |
+| exp_per_min | 188, 292, 317 (mean ~265) | 268, 268, 244 (mean ~260; + a 150 outlier on a barely-rested 1m47s hunt) |
 | sac4mana mana harvest | usual | **0 of 6** |
 
-The wings changed nothing that mattered. Defence: this content doesn't
-threaten Fizzleworth with or without them (both variants take ~0 damage; the
-one wing hunt that took a real hit was one where the mind was barely rested
-and an incubus field effect got through — nothing the wings prevent).
-Efficiency: `kills_per_100mind` is a hair *lower* with wings (more roundtime
-per kill). Cost: every wing hunt failed to get a sac4mana mana harvest
-(the wing verbs keep the attack script busy enough that sac4mana's
-"don't harvest mid-fight" guard never opens), and 3 of 6 ended out of mana.
+**Defense — clear:** across 11 hunts this content never threatened
+Fizzleworth. 0 deaths, ~0 damage, with or without wings *and* with or without
+the moonstone cube. The wings' whole reason to exist doesn't show up here.
 
-Verdict: **not worth 40M for this content.** Selling the wings.
+**exp_per_min — no detectable difference, and not enough data to claim one.**
+Base and wing central tendency are ~the same (~260), but base's three points
+range 188→317 — huge hunt-to-hunt variance (mob escapes, knockdown lockouts,
+ward RNG). n≈3 per side has no power to detect a wing effect against that
+noise. Earlier drafts of this README overstated it as "not significant" — more
+honestly: **underpowered; no difference visible.**
+
+**One real (minor) cost:** every wing hunt failed to get a sac4mana mana
+harvest — the wing verbs keep the attack script continuously busy so
+sac4mana's "don't harvest mid-fight" guard never opens. 3 of 6 wing hunts
+ended out of mana.
+
+Verdict: the wings buy **nothing measurable** for this content — no survival
+benefit (nothing was killing him anyway) and no clear exp/min gain. Not worth
+40M here. Selling.
 
 ## Cost context
 
@@ -92,7 +101,8 @@ convenience and a marginal maneuver save.
 | `start_mind` / `end_mind` / `mind_gained` | field exp (`Field Exp: N/~1210`) at hunt start (from prep's `exp`, older logs use the last rest reading) and at the first rest reading after; `mind_gained` = end − start = the field exp the hunt actually cost. `end_mind` is a decayed lower bound (bigshot reads `exp` a bit into the rest), so `mind_gained` is a slight underestimate. |
 | `duration` / `duration_min` | bigshot's reported "Last Hunt" time (active hunting, not travel) |
 | `kills_per_min` | `kills / duration_min` |
-| `kills_per_100mind` | `kills / mind_gained × 100` — the efficiency metric that doesn't care how full the mind was at the start (subtract start exp from end exp). This is the one to compare across hunts. |
+| `exp_per_min` | `mind_gained / duration_min` — **the primary metric**: field exp earned per minute of hunt (leveling speed). |
+| `kills_per_100mind` | `kills / mind_gained × 100` — kept for reference. |
 | `kills` | undead soul-departures ("rises into the heavens") + non-undead corpses bigshot looted ("You search the &lt;creature&gt;") |
 | `deaths` | Fizzleworth deaths ("You are dead!") |
 | `attack_passes` | times bigshot invoked the attack script (one decision each) |
