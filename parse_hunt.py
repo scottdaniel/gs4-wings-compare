@@ -137,6 +137,8 @@ OUT_ANCHOR = re.compile(
     r"Pus-filled sores erupt|Boils rupture|pockmarks appear|"
     r"virulent green mist (?:seeps|passes through|surrounding)|"
     r"You exhale a virulent green mist toward|"
+    r"engulfed in flames of pure essence|"          # Dark Catalyst strike on a creature
+    r"and hits for \d+ points of damage|"           # warding-spell hit line ("... and hits for N")
     r"shudders and twists in intense pain|contorts in excruciating agony|"
     r"You gesture at|The (?:hail|rocks|winds|bolts|heat) ")
 IN_ANCHOR = re.compile(
@@ -155,7 +157,10 @@ MISS = re.compile(
     r"to no effect|whacks your legs to no effect|You (?:evade|dodge)|"
     r"manage to jump out of the way|misses you|evade the attack")
 DMG_FOR  = re.compile(r"(?:for|causing) (\d+) points of damage!")
-DMG_HITS = re.compile(r"hits for (\d+) points of damage!")
+# incoming MA/weapon combo only: "   ... hits for N points of damage!". NOT
+# "... and hits for N" -- that's a warding spell (Corrupt Essence / Dark
+# Catalyst) landing on a creature.
+DMG_HITS = re.compile(r"^\s+\.\.\. hits for (\d+) points of damage!")
 DMG_CONT = re.compile(r"^\s*\.\.\. (\d+) points of damage!")
 
 dealt = taken = 0
