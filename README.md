@@ -50,18 +50,18 @@ Primary metric: **`exp_per_min`** = `(end_mind − start_mind) / duration_min`
 is bigshot's "Last Hunt" (excludes sac4mana harvest time); `end_mind` is a
 decayed reading so "fried" hunts underestimate a little.
 
-## Result (base n=5, wing n=8, cat n=3, ultima n=4; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=4)
+## Result (base n=5, wing n=8, cat n=3, ultima n=5; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=5)
 
 | | base | wing | cat | ultima |
 |---|---|---|---|---|
-| deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 4 |
-| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 3 | ~0 (once ~28; one 89 that's buddy-melee bleed) |
+| deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 5 |
+| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 3 | ~0 (real: once ~28; the 66 & 89 are reanim-buddy attacks miscounted) |
 | danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.5 | 0 | 0 |
-| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 204, 285, 273, 314 (mean 269) |
+| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 204, 285, 273, 314, 219 (mean 259) |
 | dmg_per_mana | 11.2 | 12.1 | **7.1** | 12.3 |
-| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 1 / 4 |
+| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 2 / 5 (inline top-off fires mid-hunt) |
 
-**Defense — clear:** across 20 hunts this content never threatened
+**Defense — clear:** across 21 hunts this content never threatened
 Fizzleworth. 0 deaths, ~0 damage, with or without wings *and* with or without
 the moonstone cube. What incoming damage there is comes from incubus field
 effects (icy stalagmites / "column of frigid air") that the wings don't stop —
@@ -98,28 +98,35 @@ empty before the guard opened at all. The high `exp_per_min` numbers (321,
 inflated by the front-loaded absorption curve, not a real speed advantage.
 Not worth pursuing for this content.
 
-**ultima (experimental, n=4):** `base`'s Web/Maelstrom/Tether spine kept, but
+**ultima (experimental, n=5):** `base`'s Web/Maelstrom/Tether spine kept, but
 the opener is creature-specific (Web on vereri, Corrupt Essence 703 on the
 casters), plus two Voln self-auras (Symbol of Disruption on visions to drop
 their TD, Symbol of Retribution always-on for the reactive undead flare) and a
 one-shot `;reanim` buddy off the first inciter. Hypothesis: same leveling speed
 as `base` with fewer danger events, paid in Voln favor instead of silver.
 
-**So far the hypothesis holds.** exp_per_min 269 mean (204, 285, 273, 314) —
-statistically indistinguishable from base's 265, and the spread is the same
-starting-mind artifact seen everywhere else (from-empty hunts fill the whole
-0→1200 bar and hit diminishing absorption near the top, so they read lower;
-partial-mind starts read higher). `dmg_per_mana` 12.3, same as base/wing and
-nearly double cat's. **0 danger events across all 4 hunts** (vs base 1.2/hunt) —
-consistent with the "fewer maneuvers land" idea, though n=4 with 0 events can't
-prove much yet. sac4mana harvested on 1 of 4 (ultima leaves enough of a combat
-lull for the guard to open — better than wing/cat, still not every hunt).
+**The hypothesis holds.** exp_per_min 259 mean (204, 285, 273, 314, 219) —
+indistinguishable from base's 265, with the same starting-mind spread seen
+everywhere else (from-empty hunts fill the whole 0→1200 bar and hit diminishing
+absorption near the top, so they read lower; partial-mind starts read higher).
+`dmg_per_mana` 12.3, same as base/wing and nearly double cat's. **0 danger
+events across all 5 hunts** (vs base 1.2/hunt) — consistent with "fewer
+maneuvers land," though 5 hunts with 0 events still can't put a number on it.
+sac4mana now harvested on 2 of 5: unlike wing/cat, ultima carries the same
+inline `sacrifice mana` top-off (`mana < 45`) and it fires *mid-hunt* here
+(hunts 3 and 5, ~90 mana each), so ultima doesn't have the mana-starvation
+problem that killed cat.
 
 Rough edges: hunt 2 died to `encumbered` at 1m45s (loot weight, not danger —
-a bigshot config thing). Hunt 3's `dmg_taken` 89 is the reanim buddy's melee
-crits bleeding into the damage parser, not real hits (0 wounds/stun/knockdown).
-`reanim_runs` counts the end-of-hunt `;reanim die` cleanup as a second run.
-Verdict: promising, needs a full n=5 and a cleaner damage read.
+a bigshot config thing). `dmg_taken` on hunts 3 (89) and 5 (66) is the reanim
+buddy's own attacks — melee crits on hunt 3, a thorn maneuver on an incubus on
+hunt 5 — miscounted as incoming: the parser's `IN_ANCHOR` matches
+`thorns ... grow out from the ground` and `... hits for N` regardless of
+target. 0 wounds/stun/knockdown on both, so nothing real connected. Also
+`reanim_runs` counts the end-of-hunt `;reanim die` cleanup as a run.
+Verdict: **ultima works — matches base speed, quieter, self-sufficient on
+mana.** Cost is Voln favor for the auras. Parser needs a buddy-aware damage
+read before the `dmg_taken` column means anything for this variant.
 
 ## Cost context
 
