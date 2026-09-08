@@ -150,10 +150,22 @@ OUT_ANCHOR = re.compile(
     r"shudders and twists in intense pain|contorts in excruciating agony|"
     r"You gesture at|The (?:hail|rocks|winds|bolts|heat) ")
 IN_ANCHOR = re.compile(
-    r"\bat you!|toward you\b|jabs into you|lunges hungrily for you|"
-    r"lashes at you|kicks at you|thorns suddenly grow out from the ground|"
-    r"jolts your whole body|One of the thorns|beneath (?:you|your feet)|"
-    r"stalagmites burst from the ground")
+    r"\bat you!|toward you\b|jabs? into you|lunges hungrily for you|"
+    r"lashes at you|kicks at you|jolts your whole body|"
+    r"thorns suddenly grow out from the ground (?:underneath|beneath) (?:you|your feet)|"
+    r"(?:One|Several) of the thorns? jabs? into you|"
+    r"(?:beneath|underneath) (?:you|your feet)|"
+    r"stalagmites burst from the ground beneath you")
+# The `cat` / `ultima` reanim buddy ("An animated <creature>") attacks the room's
+# creatures with the SAME maneuvers the creatures use -- its thorn field effect
+# ("... grow out from the ground underneath an incubus" -> "... hits for N")
+# otherwise lands in dmg_taken. Flag its attacks so the damage that follows is
+# booked as neither taken nor dealt (it isn't Fizzleworth's).
+BUDDY_ANCHOR = re.compile(
+    r"^An animated .+?(?:swings|flicks|delivers|hurls|throws|leaps|lunges|aims|"
+    r"attempts|spins around|jabs|kicks|claws|bites|pummels|strikes|lashes|whips)\b|"
+    r"thorns suddenly grow out from the ground (?:underneath|beneath) (?!you\b|your feet)|"
+    r"(?:One|Several) of the thorns? jabs? into (?:the|a|an) ")
 # player-only confirmation that the LAST damage line landed on Fizzleworth
 # (creatures get "is stunned", only the player gets "You are stunned for N").
 FIZZ_HIT = re.compile(r"You are stunned for \d+ round")
@@ -176,7 +188,9 @@ last = None            # (value, "dealt"|"taken") of the most recent damage line
 ctx, ctx_age = None, 99
 for s in (l.rstrip("\n") for l in win):
     ctx_age += 1
-    if OUT_ANCHOR.search(s):
+    if BUDDY_ANCHOR.search(s):
+        ctx, ctx_age = "buddy", 0
+    elif OUT_ANCHOR.search(s):
         ctx, ctx_age = "out", 0
     elif MISS.search(s):
         # a whiffed incoming attack -- clear "in", and don't let the same line
@@ -193,12 +207,18 @@ for s in (l.rstrip("\n") for l in win):
 
     m = DMG_HITS.search(s)
     if m:
-        v = int(m.group(1)); taken += v; last = (v, "taken")
-        ctx, ctx_age = "in", 0; continue
+        v = int(m.group(1))
+        if ctx == "buddy" and ctx_age <= 6:
+            last = (v, "?")            # buddy maneuver on a creature -- not ours
+        else:
+            taken += v; last = (v, "taken"); ctx, ctx_age = "in", 0
+        continue
     m = DMG_FOR.search(s)
     if m:
         n = int(m.group(1))
-        if CREATURE.search(s):
+        if ctx == "buddy" and ctx_age <= 6:
+            last = (n, "?")
+        elif CREATURE.search(s):
             dealt += n; last = (n, "dealt"); ctx, ctx_age = "out", 0
         elif ctx == "in" and ctx_age <= 3:
             taken += n; last = (n, "taken")
@@ -208,7 +228,9 @@ for s in (l.rstrip("\n") for l in win):
     m = DMG_CONT.search(s)
     if m:
         n = int(m.group(1))
-        if ctx == "in" and ctx_age <= 3:
+        if ctx == "buddy" and ctx_age <= 6:
+            last = (n, "?")
+        elif ctx == "in" and ctx_age <= 3:
             taken += n; last = (n, "taken")
         elif ctx == "out":
             dealt += n; last = (n, "dealt")

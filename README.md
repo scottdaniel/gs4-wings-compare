@@ -55,10 +55,10 @@ decayed reading so "fried" hunts underestimate a little.
 | | base | wing | cat | ultima |
 |---|---|---|---|---|
 | deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 5 |
-| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 3 | ~0 (real: once ~28; the 66 & 89 are reanim-buddy attacks miscounted) |
+| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 3 | 0 / 5 |
 | danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.5 | 0 | 0 |
 | exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 204, 285, 273, 314, 219 (mean 259) |
-| dmg_per_mana | 11.2 | 12.1 | **7.1** | 12.3 |
+| dmg_per_mana | 11.2 | 12.1 | **7.0** | 12.2 |
 | sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 2 / 5 (inline top-off fires mid-hunt) |
 
 **Defense — clear:** across 21 hunts this content never threatened
@@ -109,24 +109,25 @@ as `base` with fewer danger events, paid in Voln favor instead of silver.
 indistinguishable from base's 265, with the same starting-mind spread seen
 everywhere else (from-empty hunts fill the whole 0→1200 bar and hit diminishing
 absorption near the top, so they read lower; partial-mind starts read higher).
-`dmg_per_mana` 12.3, same as base/wing and nearly double cat's. **0 danger
-events across all 5 hunts** (vs base 1.2/hunt) — consistent with "fewer
-maneuvers land," though 5 hunts with 0 events still can't put a number on it.
+`dmg_per_mana` 12.2, same as base/wing and nearly double cat's. **0 damage and
+0 danger events across all 5 hunts** (vs base 1.2 danger/hunt) — consistent
+with "fewer maneuvers land," though 5 hunts with 0 events still can't put a
+number on it.
 sac4mana now harvested on 2 of 5: unlike wing/cat, ultima carries the same
 inline `sacrifice mana` top-off (`mana < 45`) and it fires *mid-hunt* here
 (hunts 3 and 5, ~90 mana each), so ultima doesn't have the mana-starvation
 problem that killed cat.
 
 Rough edges: hunt 2 died to `encumbered` at 1m45s (loot weight, not danger —
-a bigshot config thing). `dmg_taken` on hunts 3 (89) and 5 (66) is the reanim
-buddy's own attacks — melee crits on hunt 3, a thorn maneuver on an incubus on
-hunt 5 — miscounted as incoming: the parser's `IN_ANCHOR` matches
-`thorns ... grow out from the ground` and `... hits for N` regardless of
-target. 0 wounds/stun/knockdown on both, so nothing real connected. Also
-`reanim_runs` counts the end-of-hunt `;reanim die` cleanup as a run.
+a bigshot config thing). `reanim_runs` counts the end-of-hunt `;reanim die`
+cleanup as a run. Earlier drafts showed `dmg_taken` of 28/89/66 on hunts
+1/3/5 — that was the reanim buddy's thorn maneuver landing on a creature,
+which the damage parser booked as incoming; `parse_hunt.py` now tracks a
+`buddy` context (`An animated <creature>` attack lines + non-player thorn
+lines) and books that damage as neither taken nor dealt. All five ultima
+hunts now read 0 taken, matching their 0 wounds/stun/knockdown.
 Verdict: **ultima works — matches base speed, quieter, self-sufficient on
-mana.** Cost is Voln favor for the auras. Parser needs a buddy-aware damage
-read before the `dmg_taken` column means anything for this variant.
+mana.** Cost is Voln favor for the auras.
 
 ## Cost context
 
@@ -188,7 +189,7 @@ convenience and a marginal maneuver save.
 | `mana_out` | confirmed casts only, priced at targeted cost (Web 5, Maelstrom 10, Tether 6, Pain 11) |
 | `mana_in` | "N mana surge into you" (sac4mana's `sacrifice mana`) + 50 per `symbol_mana_casts` (Symbol of Mana is a flat 50-point refill, unlogged). Excludes natural regen. |
 | `dmg_dealt` | Maelstrom SMR ticks + ensorcelled-scepter flare + disease/mist DoT + fizzsac Pain, on creatures |
-| `dmg_taken` | best-effort sum of damage to Fizzleworth (only damage right after an explicit "...at you" marker) |
+| `dmg_taken` | best-effort sum of damage to Fizzleworth (only damage right after an explicit "...at you" marker; the reanim buddy's attacks on creatures are excluded) |
 | `dmg_per_mana` | `dmg_dealt / mana_out` — the mana-efficiency number |
 | `wounds_taken` | rank-2+ wound messages on Fizzleworth (rib shatter, nerve, etc.) |
 | `stun_events` | "You are stunned for N rounds" |
@@ -202,11 +203,14 @@ convenience and a marginal maneuver save.
 Rot pestilent visions / incubi submerge and resurface constantly). `dmg_taken`
 is approximate — GS4 damage flavor text doesn't cleanly distinguish "wound to
 right arm" on the player vs on a creature. The parser only books damage as
-taken when it directly follows a confirmed-contact marker ("...hits for N",
-"jabs into you", "jolts your whole body", etc.), and it clears the "incoming"
-context the moment a whiff shows up ("A clean miss", "Warded off", "dissipates
-upon impact", "you are unaffected", "you evade", …) so a Maelstrom DoT tick
-that interleaves right after a missed enemy attack isn't misattributed. Treat
+taken when it directly follows a player-directed contact marker ("...hits for
+N" while in an incoming context, "jabs into you", "jolts your whole body",
+etc.), it clears the "incoming" context the moment a whiff shows up ("A clean
+miss", "Warded off", "dissipates upon impact", "you are unaffected", "you
+evade", …), and it tracks a separate `buddy` context for the `cat` / `ultima`
+reanim buddy (`An animated <creature>` attack lines + thorn maneuvers aimed at
+a creature) so the buddy's own damage lands in neither `dmg_taken` nor
+`dmg_dealt`. Treat
 `kills`, `deaths`, `wounds_taken`, `stun_events`, `knockdowns`,
 `webbed_by_enemy`, `fled`, and the cast counts as the hard numbers; the damage
 sums (and `dmg_per_mana`) as directional.
