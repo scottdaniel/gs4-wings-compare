@@ -100,6 +100,10 @@ grasp_casts    = len(re.findall(r"\]>(?:incant|cast) 709\b", txt))
 catalyst_casts = len(re.findall(r"\]>(?:incant|cast) 719\b", txt))
 reanim_runs    = len(re.findall(r"Lich: custom/reanim active|Lich: reanim active", txt))
 animate_casts  = len(re.findall(r"Animate Dead|animate the (?:corpse|body|remains)|rises to serve|shambles to its feet", txt))
+# Fizzleworth-attack-ultima: two Voln self-auras (favor, not mana), cast once
+# per rank*10s lapse -- count the command sends. 0 for base/wing/cat.
+disruption_casts  = len(re.findall(r"\]>symbol of disruption\b", txt))
+retribution_casts = len(re.findall(r"\]>symbol of retribution\b", txt))
 
 # ---------------------------------------------------------------- mana
 # mana_out: confirmed casts (landed the "gesture"/effect line) * cost, so a
@@ -252,6 +256,7 @@ row = [date, logfile.split("/")[-1], variant, martial_prowess,
        kills, kpm, epm, kpe, deaths, passes,
        web_casts, mael_casts, tether_casts, pain_casts, sym_mana_casts,
        corrupt_casts, grasp_casts, catalyst_casts, reanim_runs, animate_casts,
+       disruption_casts, retribution_casts,
        mana_out, mana_in, dealt, taken, dpm,
        wounds, stun_ev, knockdowns, webbed, fled,
        wing_tap, wing_knock, wing_fold, wing_push, wing_aegis,

@@ -1,0 +1,223 @@
+---
+title: "Fizzleworth Hunt Metrics: base vs wing vs cat"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.width = 8, fig.height = 4.5, dpi = 100)
+
+library(dplyr)
+library(ggplot2)
+library(kableExtra)
+
+# Consistent variant order / colours everywhere
+variant_levels <- c("base", "wing", "cat")
+variant_cols   <- c(base = "#4C72B0", wing = "#C44E52", cat = "#55A868")
+```
+
+```{r load}
+raw <- read.csv("hunts.csv", stringsAsFactors = FALSE, na.strings = c("", "NA", "?"))
+
+hunts <- raw %>%
+  mutate(
+    variant      = factor(variant, levels = variant_levels),
+    start_mind   = suppressWarnings(as.numeric(start_mind)),
+    end_mind     = suppressWarnings(as.numeric(end_mind)),
+    # mind_gained: use the CSV value, else derive from end - start
+    mind_gained  = suppressWarnings(as.numeric(mind_gained)),
+    mind_gained  = ifelse(is.na(mind_gained) & !is.na(end_mind) & !is.na(start_mind),
+                          end_mind - start_mind, mind_gained),
+    # recompute the rate metrics so they stay correct as rows are appended
+    exp_per_min      = ifelse(!is.na(mind_gained) & duration_min > 0,
+                              mind_gained / duration_min, NA_real_),
+    kills_per_min    = ifelse(duration_min > 0, kills / duration_min, NA_real_),
+    kills_per_100mind = ifelse(!is.na(mind_gained) & mind_gained > 0,
+                               kills / mind_gained * 100, NA_real_),
+    dmg_per_mana     = ifelse(mana_out > 0, dmg_dealt / mana_out, NA_real_),
+    # incoming-danger signal (see README: maneuvers are the real threat, not dmg)
+    danger_events    = coalesce(knockdowns, 0) + coalesce(webbed_by_enemy, 0) +
+                       coalesce(wounds_taken, 0) + coalesce(stun_events, 0),
+    # mana_in minus Symbol-of-Mana refills (flat 50 each). For base/wing this is
+    # the sac4mana "sacrifice mana" surge; for cat it also includes Dark
+    # Catalyst's 1-14 refund per cast, so read cat's value as an upper bound.
+    mana_recovered   = coalesce(mana_in, 0) - 50 * coalesce(symbol_mana_casts, 0),
+    got_sac_harvest  = variant != "cat" & mana_recovered > 0,
+    hunt_id          = row_number()
+  )
+
+n_by_variant <- hunts %>% count(variant, name = "hunts", .drop = FALSE)
+```
+
+This report compares hunt performance across the three attack scripts. It reads
+`hunts.csv` directly, so re-knitting after you append rows updates every table
+and figure. Rate metrics (`exp_per_min`, `kills_per_min`, …) are recomputed here
+from the raw columns rather than trusting the CSV's cached values.
+
+**Variants** (see `README.md` for the full rotations):
+
+- **base** — Web → Energy Maelstrom → Tenebrous Tether. No wings.
+- **wing** — base rotation + the Energy Wings kit (AOE / reactive Prismatic Aegis).
+- **cat** — Corrupt Essence → Dark Catalyst insta-kill on casters; `;reanim` +
+  Pain on inciters. Completely different approach. Experimental.
+
+## Sample sizes
+
+```{r counts}
+n_by_variant %>%
+  kbl(caption = "Hunts logged per variant") %>%
+  kable_styling(full_width = FALSE)
+```
+
+## All hunts
+
+```{r all-hunts}
+hunts %>%
+  transmute(
+    id = hunt_id, date, variant,
+    dur_min = round(duration_min, 2),
+    kills,
+    mind_gained,
+    exp_per_min       = round(exp_per_min, 1),
+    kills_per_min     = round(kills_per_min, 2),
+    kills_per_100mind = round(kills_per_100mind, 2),
+    dmg_per_mana      = round(dmg_per_mana, 2),
+    deaths,
+    danger_events,
+    mana_recovered,
+    cube = martial_prowess
+  ) %>%
+  kbl(caption = "One row per hunt (NA = not measurable from that log)") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "condensed"))
+```
+
+## Summary by variant
+
+```{r summary-fn}
+summarise_metric <- function(df, col) {
+  fix <- function(x) ifelse(is.nan(x) | is.infinite(x), NA_real_, round(x, 2))
+  df %>%
+    group_by(variant, .drop = FALSE) %>%
+    summarise(
+      n_obs  = sum(!is.na(.data[[col]])),
+      mean   = fix(mean(.data[[col]], na.rm = TRUE)),
+      median = fix(median(.data[[col]], na.rm = TRUE)),
+      min    = fix(min(.data[[col]], na.rm = TRUE)),
+      max    = fix(max(.data[[col]], na.rm = TRUE)),
+      .groups = "drop"
+    )
+}
+
+metrics <- c("exp_per_min", "kills_per_min", "kills_per_100mind",
+             "dmg_per_mana", "duration_min", "danger_events", "mana_recovered")
+```
+
+```{r summary-tables, results="asis"}
+for (m in metrics) {
+  cat(
+    summarise_metric(hunts, m) %>%
+      kbl(caption = m) %>%
+      kable_styling(full_width = FALSE,
+                    bootstrap_options = c("striped", "condensed")),
+    "\n"
+  )
+}
+```
+
+## Primary metric: exp_per_min
+
+`exp_per_min = mind_gained / duration_min` — field exp earned per minute of
+hunt, i.e. leveling speed. Only hunts where both start and end mind were
+readable from the log contribute a point.
+
+```{r exp-plot}
+plot_metric <- function(df, col, ylab) {
+  d <- df %>% filter(!is.na(.data[[col]]))
+  ggplot(d, aes(variant, .data[[col]], colour = variant)) +
+    geom_jitter(width = 0.12, height = 0, size = 2.6, alpha = 0.85) +
+    stat_summary(fun = mean, geom = "crossbar", width = 0.45,
+                 linewidth = 0.4, colour = "grey30") +
+    scale_colour_manual(values = variant_cols, drop = FALSE) +
+    labs(x = NULL, y = ylab,
+         subtitle = "points = individual hunts; bar = mean") +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "none")
+}
+
+plot_metric(hunts, "exp_per_min", "field exp / min")
+```
+
+## Kill rate and mana efficiency
+
+```{r other-plots, fig.height=4}
+plot_metric(hunts, "kills_per_min", "kills / min")
+plot_metric(hunts, "kills_per_100mind", "kills per 100 mind spent")
+plot_metric(hunts, "dmg_per_mana", "damage dealt / mana spent")
+```
+
+## Incoming danger
+
+Per the README, Sorcerers defend SMR maneuvers poorly and bolts/CS well, so
+knockdowns + enemy webs + wounds + stuns are the real danger signal — not
+`dmg_taken`. Deaths are shown alongside.
+
+```{r danger}
+hunts %>%
+  group_by(variant, .drop = FALSE) %>%
+  summarise(
+    hunts          = n(),
+    deaths         = sum(coalesce(deaths, 0L)),
+    knockdowns     = sum(coalesce(knockdowns, 0L)),
+    enemy_webs     = sum(coalesce(webbed_by_enemy, 0L)),
+    wounds         = sum(coalesce(wounds_taken, 0L)),
+    stuns          = sum(coalesce(stun_events, 0L)),
+    danger_per_hunt = round(mean(danger_events), 2),
+    .groups = "drop"
+  ) %>%
+  kbl(caption = "Incoming danger, totals per variant") %>%
+  kable_styling(full_width = FALSE)
+```
+
+```{r danger-plot, fig.height=4}
+plot_metric(hunts, "danger_events", "danger events (knockdown + web + wound + stun)")
+```
+
+## sac4mana harvest
+
+The wing verbs keep the attack script continuously busy, so sac4mana's
+"not mid-fight" guard rarely opens *during* combat — a harvest only lands if the
+hunt ends with mana still low and a quiet tail (same as a base "tail harvest").
+`mana_recovered` = `mana_in` − Symbol-of-Mana refills (50 each); for `cat` it
+also folds in Dark Catalyst's 1–14 refund per cast, so treat cat's number as an
+upper bound and lean on the `notes` column for whether the real `sacrifice mana`
+actually fired.
+
+```{r harvest}
+hunts %>%
+  group_by(variant, .drop = FALSE) %>%
+  summarise(
+    hunts                = n(),
+    hunts_with_harvest   = if (first(variant) == "cat") NA_integer_ else sum(got_sac_harvest),
+    total_mana_recovered = sum(mana_recovered),
+    .groups = "drop"
+  ) %>%
+  kbl(caption = "sac4mana harvest (base/wing); cat = see notes") %>%
+  kable_styling(full_width = FALSE)
+```
+
+## Confounds to keep in mind
+
+- **Moonstone cube** (`martial_prowess`): hunt 1 ran without it, every hunt
+  after with it. Keep it constant across whatever you're actually comparing.
+- **Rested vs partial start**: several hunts started at ~10% mind, giving short
+  durations and inflated `kills_per_min`. `kills_per_100mind` and `exp_per_min`
+  normalise for this; raw `kills` / `duration` do not.
+- **Small n**: with ~3 usable `exp_per_min` points per variant and large
+  hunt-to-hunt variance, treat the summary means as directional, not
+  conclusive.
+- `dmg_dealt` is inflated when mobs submerge and get re-hit; treat
+  `dmg_per_mana` as directional.

@@ -32,6 +32,10 @@ vignettes/*.pdf
 *_cache/
 /cache/
 
+# rendered R Markdown output
+/hunt-comparison.html
+/*_files/
+
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md

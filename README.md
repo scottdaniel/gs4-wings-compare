@@ -16,6 +16,32 @@ Energy Wings kit, to decide whether the wings are worth running.
   then Pain 711 the rest to death (each cast = 20–35% max HP + 3–7s roundtime
   lockout). Grasp of the Grave 709 (area knockdown) when ≥2 in the room.
   Flee at 4. Experimental.
+- `variant = ultima` — `Fizzleworth-attack-ultima.lic` — `base`'s 710 → 706 →
+  hold-DoT finish, but a creature-specific opener plus two Voln self-auras and
+  a one-shot animate buddy. No wings.
+  - **magna vereri** → Web 118 (they don't cast; a snare is the useful
+    disable). **Ivasian inciter / dark-eyed incubus / pestilent vision** →
+    Corrupt Essence 703 (all three cast; silence beats a web), once/target.
+    Unrecognised → Web 118.
+  - **pestilent vision** additionally → Symbol of Disruption *aura* (Voln,
+    favor) — one cast covers every noncorporeal undead struck for rank×10s;
+    gswiki recommends it on visions "to lower their TD to aid in warding
+    them". Re-armed when it lapses, not per-creature.
+  - **Symbol of Retribution** *aura* (Voln, favor) kept up every pass —
+    reactive divine flare back at undead that strike Fizzleworth. Pure
+    defence. `RETRIBUTION` knob to disable.
+  - **One-shot buddy**: first inciter of the hunt with no animate up →
+    `;reanim` (Pain 711 to death + Animate Dead 730). Just once per hunt
+    (`$ult_reanim_done`, cleared by `;reanim die` and by `Fizzleworth-prep`);
+    later inciters get the normal 703 → 710 → 706. Middle ground between
+    `base` (no buddy) and `cat` (re-reanims on every buddy death).
+  Experimental.
+
+The `cat` / `ultima` animate buddy is dismissed in the field at end of hunt by
+`Fizzleworth-anim-cleanup.lic` (weapon back to verlok → `tell anim die` →
+`;eloot` the remains), with `Fizzleworth-prerest`'s `;reanim die` as a
+town-side fallback — so no animated corpse (or its weapon / loot) is dragged
+home.
 
 Plan: 5 hunts each variant, same area/bounty type where possible.
 
@@ -24,35 +50,58 @@ Primary metric: **`exp_per_min`** = `(end_mind − start_mind) / duration_min`
 is bigshot's "Last Hunt" (excludes sac4mana harvest time); `end_mind` is a
 decayed reading so "fried" hunts underestimate a little.
 
-## Result (base n=5, wing n=6; usable exp_per_min: base n=3, wing n=3-4)
+## Result (base n=5, wing n=8, cat n=2, ultima n=0; usable exp_per_min: base n=3, wing n=6, cat n=2)
 
-| | base | wing |
-|---|---|---|
-| deaths | 0 / 5 | 0 / 6 |
-| dmg taken | ~0 (once 40, no cube) | ~0 (once ~15–30, once ~5) |
-| knockdowns+webs / hunt | ~0.6 | ~0.2 |
-| exp_per_min | 188, 292, 317 (mean ~265) | 268, 268, 244 (mean ~260; + a 150 outlier on a barely-rested 1m47s hunt) |
-| sac4mana mana harvest | usual | **0 of 6** |
+| | base | wing | cat |
+|---|---|---|---|
+| deaths | 0 / 5 | 0 / 8 | 0 / 2 |
+| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 2 |
+| danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.5 | 0 |
+| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249 (mean 285) |
+| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | n/a (Dark Catalyst refunds muddy the number) |
 
-**Defense — clear:** across 11 hunts this content never threatened
+**Defense — clear:** across 15 hunts this content never threatened
 Fizzleworth. 0 deaths, ~0 damage, with or without wings *and* with or without
-the moonstone cube. The wings' whole reason to exist doesn't show up here.
+the moonstone cube. What incoming damage there is comes from incubus field
+effects (icy stalagmites / "column of frigid air") that the wings don't stop —
+wing hunts 6 and 7 both ate one for ~15–30 and a short stun. The wings' whole
+reason to exist doesn't show up here.
 
-**exp_per_min — no detectable difference, and not enough data to claim one.**
-Base and wing central tendency are ~the same (~260), but base's three points
-range 188→317 — huge hunt-to-hunt variance (mob escapes, knockdown lockouts,
-ward RNG). n≈3 per side has no power to detect a wing effect against that
-noise. Earlier drafts of this README overstated it as "not significant" — more
-honestly: **underpowered; no difference visible.**
+**exp_per_min — no wing benefit visible; if anything wing trends lower, but
+it's confounded.** base 265 vs wing 215 vs cat 285 — but the two lowest wing
+points (153, 205) are a heavily-decayed `end_mind` reading and a barely-rested
+partial start, not real slowdowns, and base's three points still range 188→317
+on their own. Huge hunt-to-hunt variance (mob escapes, knockdown lockouts, ward
+RNG), n≈3–6 per variant: **underpowered; no wing gain, and no clean case that
+wings cost exp either.**
 
-**One real (minor) cost:** every wing hunt failed to get a sac4mana mana
-harvest — the wing verbs keep the attack script continuously busy so
-sac4mana's "don't harvest mid-fight" guard never opens. 3 of 6 wing hunts
-ended out of mana.
+**One real (minor) cost:** the wing verbs keep the attack script continuously
+busy, so sac4mana's "don't harvest mid-fight" guard almost never opens *during*
+combat. Only 1 of 8 wing hunts landed a harvest, and that one was a post-combat
+tail harvest (mana still low, quiet room after the last kill) — the same kind
+base gets. Most wing hunts ended fried or out of mana with no quiet tail, so
+the harvest never fired.
 
 Verdict: the wings buy **nothing measurable** for this content — no survival
 benefit (nothing was killing him anyway) and no clear exp/min gain. Not worth
 40M here. Selling.
+
+**cat (experimental, n=2):** a completely different rotation, no wings.
+exp_per_min competitive (~285) but `dmg_per_mana` ~6–7, far the worst of any
+variant (Pain lockouts + Dark Catalyst are mana-hungry). The first cat hunt
+stalled ~2 min in — Fizzleworth never died, but bigshot ran itself out of mana
+and kept resting instead of hunting, because sac4mana's guard never opened
+(same cause as wing) and `-cat` had no inline top-off. Fixed after that hunt
+(`-cat` now sends `sacrifice mana` itself at mana < 45); cat hunt 2 ran clean
+with the fix. Needs more data.
+
+**ultima (experimental, n=0):** `base`'s Web/Maelstrom/Tether spine kept, but
+the opener is creature-specific (Web on vereri, Corrupt Essence 703 on the
+casters), plus two Voln self-auras (Symbol of Disruption on visions to drop
+their TD, Symbol of Retribution always-on for the reactive undead flare) and a
+one-shot `;reanim` buddy off the first inciter. The hypothesis: same
+leveling speed as `base` with fewer danger events, at the cost of Voln favor
+instead of silver. No hunts logged yet.
 
 ## Cost context
 
@@ -107,8 +156,9 @@ convenience and a marginal maneuver save.
 | `deaths` | Fizzleworth deaths ("You are dead!") |
 | `attack_passes` | times bigshot invoked the attack script (one decision each) |
 | `web_casts` / `maelstrom_casts` / `tether_casts` / `pain_casts` | `incant 118` / `prep 710` / `incant\|prep 706` / `prep\|prepare 711` command sends, from **any** script in the window (attack-* and fizzsac) |
-| `corrupt_casts` / `grasp_casts` / `catalyst_casts` | `cat` variant only — `incant 703` / `709` / `719` sends. 0 for base/wing. (Inciter Pain 711 lands in `pain_casts`.) |
-| `reanim_runs` / `animate_casts` | `cat` variant — times `;reanim` ran / an Animate Dead corpse-raise landed. |
+| `corrupt_casts` / `grasp_casts` / `catalyst_casts` | `incant 703` / `709` / `719` sends. `corrupt_casts` fires for both `cat` and `ultima`; `grasp`/`catalyst` are `cat` only. 0 for base/wing. (Inciter Pain 711 lands in `pain_casts`.) |
+| `reanim_runs` / `animate_casts` | `cat` / `ultima` — times `;reanim` ran / an Animate Dead corpse-raise landed. `ultima` caps `reanim_runs` at 1 per hunt by design. |
+| `disruption_casts` / `retribution_casts` | `ultima` only — `symbol of disruption` / `symbol of retribution` sends (Voln self-auras, favor not mana; each covers rank×10s so counts are low). 0 for base/wing/cat. |
 | `symbol_mana_casts` | `symbol of mana` sends (bigshot casts it; the game logs no mana amount) |
 | `mana_out` | confirmed casts only, priced at targeted cost (Web 5, Maelstrom 10, Tether 6, Pain 11) |
 | `mana_in` | "N mana surge into you" (sac4mana's `sacrifice mana`) + 50 per `symbol_mana_casts` (Symbol of Mana is a flat 50-point refill, unlogged). Excludes natural regen. |
