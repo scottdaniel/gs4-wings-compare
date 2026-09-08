@@ -50,18 +50,18 @@ Primary metric: **`exp_per_min`** = `(end_mind − start_mind) / duration_min`
 is bigshot's "Last Hunt" (excludes sac4mana harvest time); `end_mind` is a
 decayed reading so "fried" hunts underestimate a little.
 
-## Result (base n=5, wing n=8, cat n=2, ultima n=4; usable exp_per_min: base n=3, wing n=6, cat n=2, ultima n=4)
+## Result (base n=5, wing n=8, cat n=3, ultima n=4; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=4)
 
 | | base | wing | cat | ultima |
 |---|---|---|---|---|
-| deaths | 0 / 5 | 0 / 8 | 0 / 2 | 0 / 4 |
-| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 2 | ~0 (once ~28; one 89 that's buddy-melee bleed) |
+| deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 4 |
+| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 3 | ~0 (once ~28; one 89 that's buddy-melee bleed) |
 | danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.5 | 0 | 0 |
-| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249 (mean 285) | 204, 285, 273, 314 (mean 269) |
-| dmg_per_mana | 11.2 | 12.1 | 6.7 | 12.3 |
-| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | n/a (Dark Catalyst refunds muddy the number) | 1 / 4 |
+| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 204, 285, 273, 314 (mean 269) |
+| dmg_per_mana | 11.2 | 12.1 | **7.1** | 12.3 |
+| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 1 / 4 |
 
-**Defense — clear:** across 19 hunts this content never threatened
+**Defense — clear:** across 20 hunts this content never threatened
 Fizzleworth. 0 deaths, ~0 damage, with or without wings *and* with or without
 the moonstone cube. What incoming damage there is comes from incubus field
 effects (icy stalagmites / "column of frigid air") that the wings don't stop —
@@ -87,14 +87,16 @@ Verdict: the wings buy **nothing measurable** for this content — no survival
 benefit (nothing was killing him anyway) and no clear exp/min gain. Not worth
 40M here. Selling.
 
-**cat (experimental, n=2):** a completely different rotation, no wings.
-exp_per_min competitive (~285) but `dmg_per_mana` ~6–7, far the worst of any
-variant (Pain lockouts + Dark Catalyst are mana-hungry). The first cat hunt
-stalled ~2 min in — Fizzleworth never died, but bigshot ran itself out of mana
-and kept resting instead of hunting, because sac4mana's guard never opened
-(same cause as wing) and `-cat` had no inline top-off. Fixed after that hunt
-(`-cat` now sends `sacrifice mana` itself at mana < 45); cat hunt 2 ran clean
-with the fix. Needs more data.
+**cat (experimental, n=3) — done, not viable here.** A completely different
+rotation, no wings. `dmg_per_mana` ~7, far the worst of any variant (Pain
+lockouts + Dark Catalyst are mana-hungry), and it can't sustain a hunt: all
+three cat runs ended out of mana in **under 3 minutes** (2:05, 2:53, 1:48).
+The `-cat` inline `sacrifice mana` fix (fires at mana < 45) helped once — cat
+hunt 2 got an 89-mana harvest and lasted 2:53 — but cat hunts 1 and 3 hit
+empty before the guard opened at all. The high `exp_per_min` numbers (321,
+249, 336) are all near-empty-start partials, so the per-minute rate is
+inflated by the front-loaded absorption curve, not a real speed advantage.
+Not worth pursuing for this content.
 
 **ultima (experimental, n=4):** `base`'s Web/Maelstrom/Tether spine kept, but
 the opener is creature-specific (Web on vereri, Corrupt Essence 703 on the
