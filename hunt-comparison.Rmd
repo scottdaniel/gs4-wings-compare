@@ -1,5 +1,5 @@
 ---
-title: "Fizzleworth Hunt Metrics: base vs wing vs cat"
+title: "Fizzleworth Hunt Metrics: base vs wing vs cat vs ultima"
 output:
   html_document:
     toc: true
@@ -16,8 +16,9 @@ library(ggplot2)
 library(kableExtra)
 
 # Consistent variant order / colours everywhere
-variant_levels <- c("base", "wing", "cat")
-variant_cols   <- c(base = "#4C72B0", wing = "#C44E52", cat = "#55A868")
+variant_levels <- c("base", "wing", "cat", "ultima")
+variant_cols   <- c(base = "#4C72B0", wing = "#C44E52", cat = "#55A868",
+                    ultima = "#8172B2")
 ```
 
 ```{r load}
@@ -53,7 +54,7 @@ hunts <- raw %>%
 n_by_variant <- hunts %>% count(variant, name = "hunts", .drop = FALSE)
 ```
 
-This report compares hunt performance across the three attack scripts. It reads
+This report compares hunt performance across the attack scripts. It reads
 `hunts.csv` directly, so re-knitting after you append rows updates every table
 and figure. Rate metrics (`exp_per_min`, `kills_per_min`, …) are recomputed here
 from the raw columns rather than trusting the CSV's cached values.
@@ -64,6 +65,10 @@ from the raw columns rather than trusting the CSV's cached values.
 - **wing** — base rotation + the Energy Wings kit (AOE / reactive Prismatic Aegis).
 - **cat** — Corrupt Essence → Dark Catalyst insta-kill on casters; `;reanim` +
   Pain on inciters. Completely different approach. Experimental.
+- **ultima** — base's Maelstrom/Tether spine + a creature-specific opener
+  (Web on vereri, Corrupt Essence on casters), two Voln self-auras (Symbol of
+  Disruption / Retribution) and a one-shot `;reanim` buddy. No wings.
+  Experimental.
 
 ## Sample sizes
 

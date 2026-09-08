@@ -55,8 +55,12 @@ else:
 # -- for hunts that ended "fried" the real end was ~the cap (1206-1220).
 # mind_gained = end - start is the field exp the hunt cost, which normalizes
 # kills/duration for an inconsistent starting mind (kills_per_100mind).
-_post = all_lines[end:end+1500]
-_em = re.findall(r"Field Exp: ([\d,]+)/1,?2\d\d", "".join(_post))
+# Look past the window for the first `exp` reading, but stop at the next
+# "Bigshot hunting" so a delayed reading (long loot/travel tail) is still
+# caught without ever grabbing the *next* hunt's starting mind.
+_post = all_lines[end:]
+_stop = next((i for i, ln in enumerate(_post) if "Bigshot hunting" in ln), len(_post))
+_em = re.findall(r"Field Exp: ([\d,]+)/1,?2\d\d", "".join(_post[:_stop]))
 end_mind = _em[0].replace(",", "") if _em else "?"
 if start_mind.isdigit() and end_mind.isdigit():
     mind_gained = int(end_mind) - int(start_mind)
