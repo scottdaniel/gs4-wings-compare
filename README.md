@@ -28,8 +28,9 @@ Energy Wings kit, to decide whether the wings are worth running.
     gswiki recommends it on visions "to lower their TD to aid in warding
     them". Re-armed when it lapses, not per-creature.
   - **Symbol of Retribution** *aura* (Voln, favor) kept up every pass —
-    reactive divine flare back at undead that strike Fizzleworth. Pure
-    defence. `RETRIBUTION` knob to disable.
+    reactive divine flare back at undead that strike Fizzleworth. **Dead weight
+    in Den of Rot** (undead here never land a hit — see the Retribution
+    section); set `RETRIBUTION = false`.
   - **One-shot buddy**: first inciter of the hunt with no animate up →
     `;reanim` (Pain 711 to death + Animate Dead 730). Just once per hunt
     (`$ult_reanim_done`, cleared by `;reanim die` and by `Fizzleworth-prep`);
@@ -50,19 +51,20 @@ Primary metric: **`exp_per_min`** = `(end_mind − start_mind) / duration_min`
 is bigshot's "Last Hunt" (excludes sac4mana harvest time); `end_mind` is a
 decayed reading so "fried" hunts underestimate a little.
 
-## Result (base n=5, wing n=8, cat n=3, ultima n=19 RETR-on + 1 RETR-off; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=20)
+## Result (base n=5, wing n=8, cat n=3, ultima n=20; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=20)
 
-`ultima` column = the 19 RETRIBUTION-on hunts. The one RETR-off hunt so far is
-called out separately (it was disrupted by a fizzsac pause, not a fair sample).
+(19 of the 20 `ultima` hunts had Symbol of Retribution up — but the aura never
+once fired in this content, so it's not a variable here. See the Retribution
+section.)
 
 | | base | wing | cat | ultima |
 |---|---|---|---|---|
 | deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 20 |
-| dmg taken | ~0 (once 40, no cube) | ~0 (four hits: ~29+stun, ~15–30, ~10+2 knockdowns, ~5) | 0 / 3 | 0 / 19 on; **63 + rank-2 wound + 5-round stun + knockdown** on the 1 RETR-off hunt (during a fizzsac pause) |
-| danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.62 | 0 | 0.10 on (2 harmless knockdowns in 19); the RETR-off hunt had a wound + stun + knockdown in one hit |
-| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 130–314, mean 207, median 204 (n=19 on; RETR-off hunt 203) |
+| dmg taken | ~0 (once 40, no cube) | ~0 (four hits: ~29+stun, ~15–30, ~10+2 knockdowns, ~5) | 0 / 3 | ~0 for 19; **63 + rank-2 wound + 5-round stun + knockdown** on one hunt (an inciter thorn during a fizzsac pause) |
+| danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.62 | 0 | 0.25 (2 harmless knockdowns + one 3-effect thorn hit, in 20) |
+| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 130–314, mean 207, median 204 (n=20) |
 | dmg_per_mana | 11.2 | 12.1 | **7.0** | 12.2 |
-| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 14 / 19 (inline top-off, reliable once dialed in) |
+| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 14 / 20 (inline top-off, reliable once dialed in) |
 
 **Defense — clear:** across 36 hunts, 0 deaths, and only twice did anything
 land hard. Incoming damage is otherwise near-zero, with or without wings *and*
@@ -104,28 +106,31 @@ empty before the guard opened at all. The high `exp_per_min` numbers (321,
 inflated by the front-loaded absorption curve, not a real speed advantage.
 Not worth pursuing for this content.
 
-**ultima (experimental, n=19, all RETRIBUTION on):** `base`'s Web/Maelstrom/
-Tether spine kept, but the opener is creature-specific (Web on vereri, Corrupt
-Essence 703 on the casters), plus two Voln self-auras (Symbol of Disruption on
-visions to drop their TD, Symbol of Retribution always-on for the reactive
-undead flare) and a one-shot `;reanim` buddy off the first inciter. Hypothesis:
-same leveling speed as `base` with fewer danger events, paid in Voln favor
-instead of silver.
+**ultima (experimental, n=20):** `base`'s Web/Maelstrom/Tether spine kept, but
+the opener is creature-specific (Web on vereri, Corrupt Essence 703 on the
+casters), plus two Voln self-auras (Symbol of Disruption on visions to drop
+their TD; Symbol of Retribution — which turns out to do nothing here, see
+below) and a one-shot `;reanim` buddy off the first inciter. Hypothesis: same
+leveling speed as `base` with fewer danger events, paid in Voln favor instead
+of silver.
 
 **The hypothesis holds on defense; on speed the metric is too noisy to call.**
-exp_per_min ranges 130–314, mean **207**, median 204 (n=19). That's below
+exp_per_min ranges 130–314, mean **207**, median 204 (n=20). That's below
 base's 265, but base's mean rests on n=3 (two of which were partial-mind starts
 that read high) and `exp_per_min` is dominated by how full mind is at the start
 and stop of a hunt, not by the rotation — the low ultima readings (130–166) are
 all slow inciter-heavy pulls, the mid ones (195–235) are ordinary
 partial-start → fried hunts. Need a matched-start base sample to compare
-properly. `dmg_per_mana` 12.2, same as base/wing and ~1.7× cat. **0 damage
-taken across all 19 hunts, two knockdowns** (vs base 1.2 danger/hunt) — the
-"fewer maneuvers land" claim is now on solid n. Both knockdowns (hunts 12 and
-19) were a 5-second roundtime and nothing else — no wound, stun, or damage.
-sac4mana harvested on **14 of 19** — once the inline `sacrifice mana` top-off
-(`mana < 45`) was dialed in it fires mid-hunt almost every hunt (~90 mana
-each), so ultima has none of the mana starvation that killed cat.
+properly. `dmg_per_mana` 12.2, same as base/wing and ~1.7× cat. **Defense: 19
+of 20 hunts took 0 damage** (vs base 1.2 danger/hunt). The two knockdowns on
+those (hunts 12, 19) were a 5-second roundtime and nothing else. The 20th hunt
+took the dataset's worst hit — an inciter thorn maneuver for ~63 + a rank-2
+wound + a 5-round stun + a knockdown — but that landed while bigshot was paused
+for a fizzsac harvest and the character had been wandered into a fresh room
+mid-cast, i.e. the rotation wasn't defending. sac4mana harvested on **14 of
+20** — once the inline `sacrifice mana` top-off (`mana < 45`) was dialed in it
+fires mid-hunt almost every hunt (~90 mana each), so ultima has none of the
+mana starvation that killed cat.
 
 Data note: four ultima hunts (3, 7, 10, 18) turned a bounty in right after the
 hunt, which dumps ~450 field exp into the pool before bigshot reads `exp` —
@@ -143,54 +148,45 @@ hunt now reads 0 taken, matching its 0 wounds/stun.
 Verdict: **ultima works — matches base speed, quieter, self-sufficient on
 mana.** Cost is Voln favor for the auras.
 
-### Symbol of Retribution: is it earning its favor?
+### Symbol of Retribution: it does nothing in this content — turn it off
 
 `RETRIBUTION = true` (default) vs `false` in `Fizzleworth-attack-ultima.lic`.
-Retribution is a self-aura that flares divine damage back at undead that
-*strike* Fizzleworth — reactive only, no damage block, no maneuver defense.
+Per [gswiki](https://gswiki.play.net/Symbol_of_Retribution), the self-cast aura
+"reactively flares with divine retribution at **undead who manage to strike the
+player**" — flare message `** Your aura unleashes a blast of divine retribution
+at the <undead>! **`. Undead only; reactive only; no damage block, no maneuver
+defense.
 
-**Favor** comes only from releasing undead (`ceil(level/15 × creatureLevel)`
-each) or, for Voln Masters, the Master's-Hall globe (~500 favor / deed). No
-prayer refill, no decay (gswiki: Favor). Whole-session favor from the 09.09
-run: **824,680 → ~821,891 over 5 hunts ≈ −450/hunt**. Per hunt: ~2,000–2,400
-spent on symbols (a ~−1,550 batch of courage/protection/supremacy + Retribution
-+ Disruption, plus ~−500–950 in mid-hunt aura recasts on longer hunts) against
-~1,900 back from ~6 vision releases at ~320 each. The 822k pool ÷ 450 ≈ ~1,800
-hunts of runway, so it drains slowly but only undead kills refill it.
+**Across all 19 RETRIBUTION-on hunts the aura flared exactly 0 times.**
+`grep "aura unleashes a blast of divine retribution"` over every log: no hits.
+Why: the only undead in Den of Rot are the pestilent visions, and the rotation
+silences them (Corrupt Essence 703) and kills them fast — every single vision
+attack against Fizzleworth in the 09.09/09.10 marathons was warded off
+(his TD ~385 vs their CS ~315). Nothing else here is undead. So Retribution has
+nothing to react to.
 
-**Retribution's damage share (09.09, RETRIBUTION on):** 11 flares over ~5.5
-hunts — 51/54/92/90/73/64/58/53/82/54/80, **751 total, ~68 avg, ~1–3
-flares/hunt**.
+**Earlier draft of this section was wrong.** It credited Retribution with "11
+flares, 751 dmg, ~7% of output (51/54/92/90/73/64/58/53/82/54/80)". Those are
+the **faewood scepter's holy-fire flare** (`Your faewood scepter bursts alight
+with leaping tongues of holy fire! → Consumed by the hallowed flames, a
+<creature> is ravaged for N`) — an *offensive* weapon flare on Fizzleworth's
+own hits, already inside `dmg_dealt`. Unrelated to Symbol of Retribution.
 
-| hunt | Retribution dmg | total outgoing | share |
-|---|---|---|---|
-| 1 | 236 (3 flares) | ~1,876 | ~13% |
-| 2 | 137 (2 flares) | ~2,443 | ~6% |
-| 3 | 58 (1 flare)   | ~2,327 | ~2.5% |
+**Verdict: `RETRIBUTION = false`.** It can't help here — the undead never land
+a hit — so the favor it costs (part of the ~2,000/hunt symbol batch) is pure
+waste. No on/off exp comparison needed; there's nothing to compare. Keep it
+only if you take `ultima` somewhere with undead that actually connect.
 
-~7% of output on average, highly variable (depends on how often a creature
-lands a hit — rare here, since 703 silences the casters). Buys **no
-survivability**.
+The 09.10 - 3 hunt below is nominally the first "off" hunt but tells us nothing
+about Retribution — the hard hit on it came from an Ivasian *inciter* (living,
+not undead), which Retribution would never touch on or off.
 
-**The test:** collect `exp_per_min` / `kills_per_min` / `dmg_per_mana` and the
-per-hunt favor delta with Retribution on (09.09 night) vs off (next night). If
-losing ~7% of damage doesn't slow the hunts, `RETRIBUTION = false` saves
-~300–600 favor/hunt for free.
-
-**On-arm baseline** (19 `ultima` rows, RETRIBUTION on): `exp_per_min` mean
-207, median 204 (130–314), `kills_per_min` mean 4.6, `dmg_per_mana` mean 12.2,
-0 damage taken, 2 harmless knockdowns in 19.
-
-**Off-arm, hunt 1** (RETRIBUTION off, 09.10 - 3): `exp_per_min` 203, 17 kills /
-4m40s — right in the on-arm range. But it also carries the worst hit in the
-dataset: an inciter thorn maneuver for ~63 + a rank-2 sternum wound + a 5-round
-stun + a knockdown, which ended the hunt. **RETRIBUTION off did not cause it** —
-that's a maneuver, and Retribution only flares at attacks that land; the
-exposure was a fizzsac harvest pause that wandered Fizzleworth into a fresh room
-mid-cast. Doesn't count as a real off-arm sample. Off-arm still effectively
-n=0. Hunts 6–13 are the 09.09 - 9 marathon,
-14–19 the 09.10 - 2 marathon (both had a couple of unrepresentative hunts —
-a fizzsac Pain-grind, a slow double-reanim — left out). Off-arm still TODO.
+**ultima row set** (20 hunts, 19 with the aura up + 1 without — the aura never
+fired either way, see above): `exp_per_min` mean 207, median 204 (130–314),
+`kills_per_min` mean 4.6, `dmg_per_mana` mean 12.2, 0 damage taken except the
+one inciter thorn hit. Hunts 6–13 are the 09.09 - 9 marathon, 14–19 the
+09.10 - 2 marathon, 20 the 09.10 - 3 hunt (all had a couple of unrepresentative
+hunts — a fizzsac Pain-grind, a slow double-reanim — left out).
 
 ## Cost context
 
