@@ -129,6 +129,40 @@ hunts now read 0 taken, matching their 0 wounds/stun/knockdown.
 Verdict: **ultima works — matches base speed, quieter, self-sufficient on
 mana.** Cost is Voln favor for the auras.
 
+### Symbol of Retribution: is it earning its favor?
+
+`RETRIBUTION = true` (default) vs `false` in `Fizzleworth-attack-ultima.lic`.
+Retribution is a self-aura that flares divine damage back at undead that
+*strike* Fizzleworth — reactive only, no damage block, no maneuver defense.
+
+**Favor** comes only from releasing undead (`ceil(level/15 × creatureLevel)`
+each) or, for Voln Masters, the Master's-Hall globe (~500 favor / deed). No
+prayer refill, no decay (gswiki: Favor). Whole-session favor from the 09.09
+run: **824,680 → ~821,891 over 5 hunts ≈ −450/hunt**. Per hunt: ~2,000–2,400
+spent on symbols (a ~−1,550 batch of courage/protection/supremacy + Retribution
++ Disruption, plus ~−500–950 in mid-hunt aura recasts on longer hunts) against
+~1,900 back from ~6 vision releases at ~320 each. The 822k pool ÷ 450 ≈ ~1,800
+hunts of runway, so it drains slowly but only undead kills refill it.
+
+**Retribution's damage share (09.09, RETRIBUTION on):** 11 flares over ~5.5
+hunts — 51/54/92/90/73/64/58/53/82/54/80, **751 total, ~68 avg, ~1–3
+flares/hunt**.
+
+| hunt | Retribution dmg | total outgoing | share |
+|---|---|---|---|
+| 1 | 236 (3 flares) | ~1,876 | ~13% |
+| 2 | 137 (2 flares) | ~2,443 | ~6% |
+| 3 | 58 (1 flare)   | ~2,327 | ~2.5% |
+
+~7% of output on average, highly variable (depends on how often a creature
+lands a hit — rare here, since 703 silences the casters). Buys **no
+survivability**.
+
+**The test:** collect `exp_per_min` / `kills_per_min` / `dmg_per_mana` and the
+per-hunt favor delta with Retribution on (09.09 night) vs off (next night). If
+losing ~7% of damage doesn't slow the hunts, `RETRIBUTION = false` saves
+~300–600 favor/hunt for free.
+
 ## Cost context
 
 Energy Wings run **~40,000,000 silver**. A moonstone cube (spell 1705,
