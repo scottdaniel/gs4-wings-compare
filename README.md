@@ -50,18 +50,18 @@ Primary metric: **`exp_per_min`** = `(end_mind − start_mind) / duration_min`
 is bigshot's "Last Hunt" (excludes sac4mana harvest time); `end_mind` is a
 decayed reading so "fried" hunts underestimate a little.
 
-## Result (base n=5, wing n=8, cat n=3, ultima n=13; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=13)
+## Result (base n=5, wing n=8, cat n=3, ultima n=19; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=19)
 
 | | base | wing | cat | ultima |
 |---|---|---|---|---|
-| deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 13 |
-| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 3 | 0 / 13 |
-| danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.5 | 0 | 0.08 (one knockdown in 13) |
-| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 166–314, mean 238 (n=13) |
-| dmg_per_mana | 11.2 | 12.1 | **7.0** | 12.1 |
-| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 9 / 13 (inline top-off, reliable once dialed in) |
+| deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 19 |
+| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 3 | 0 / 19 |
+| danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.5 | 0 | 0.11 (two harmless knockdowns in 19) |
+| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 130–321, mean 228 (n=19) |
+| dmg_per_mana | 11.2 | 12.1 | **7.0** | 12.2 |
+| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 14 / 19 (inline top-off, reliable once dialed in) |
 
-**Defense — clear:** across 29 hunts this content never threatened
+**Defense — clear:** across 35 hunts this content never threatened
 Fizzleworth. 0 deaths, ~0 damage, with or without wings *and* with or without
 the moonstone cube. What incoming damage there is comes from incubus field
 effects (icy stalagmites / "column of frigid air") that the wings don't stop —
@@ -98,7 +98,7 @@ empty before the guard opened at all. The high `exp_per_min` numbers (321,
 inflated by the front-loaded absorption curve, not a real speed advantage.
 Not worth pursuing for this content.
 
-**ultima (experimental, n=13, all RETRIBUTION on):** `base`'s Web/Maelstrom/
+**ultima (experimental, n=19, all RETRIBUTION on):** `base`'s Web/Maelstrom/
 Tether spine kept, but the opener is creature-specific (Web on vereri, Corrupt
 Essence 703 on the casters), plus two Voln self-auras (Symbol of Disruption on
 visions to drop their TD, Symbol of Retribution always-on for the reactive
@@ -106,18 +106,18 @@ undead flare) and a one-shot `;reanim` buddy off the first inciter. Hypothesis:
 same leveling speed as `base` with fewer danger events, paid in Voln favor
 instead of silver.
 
-**The hypothesis holds.** exp_per_min ranges 166–314, mean **238** (n=13) —
-same ballpark as base's 265, with the usual starting-mind spread (from-empty
-hunts fill the whole 0→1200 bar and hit diminishing absorption near the top so
-they read lower; the many partial-start → fried hunts in the 09.09 marathon
-mostly land 200–260). `dmg_per_mana` 12.1, same as base/wing and ~1.7× cat.
-**0 damage taken and one knockdown across all 13 hunts** (vs base 1.2
-danger/hunt) — the "fewer maneuvers land" claim is now on real n. The lone
-danger event (ultima hunt 12) was a knockdown with no wound, stun, or damage.
-sac4mana harvested on **9 of 13** — once the inline `sacrifice mana` top-off
-(`mana < 45`) was dialed in it fires mid-hunt almost every hunt (7/8 in the
-09.09 run, ~90 mana each), so ultima has none of the mana starvation that
-killed cat.
+**The hypothesis holds.** exp_per_min ranges 130–321, mean **228** (n=19) —
+same ballpark as base's 265. The wide range is a starting-mind / overfill
+artifact, not real speed variance: from-empty and partial-start hunts that stop
+right at the cap read 200–240, hunts left to overfill well past 1220 read 280–
+321, and hunts on a slow inciter-heavy pull read 130–160. `dmg_per_mana` 12.2,
+same as base/wing and ~1.7× cat. **0 damage taken across all 19 hunts, two
+knockdowns** (vs base 1.2 danger/hunt) — the "fewer maneuvers land" claim is
+now on solid n. Both knockdowns (hunts 12 and 19) were a 5-second roundtime and
+nothing else — no wound, stun, or damage. sac4mana harvested on **14 of 19** —
+once the inline `sacrifice mana` top-off (`mana < 45`) was dialed in it fires
+mid-hunt almost every hunt (~90 mana each), so ultima has none of the mana
+starvation that killed cat.
 
 Rough edges: an early hunt (09.08 #2) died to `encumbered` at 1m45s (loot
 weight, not danger). `reanim_runs` counts the end-of-hunt `;reanim die` cleanup
@@ -163,11 +163,11 @@ per-hunt favor delta with Retribution on (09.09 night) vs off (next night). If
 losing ~7% of damage doesn't slow the hunts, `RETRIBUTION = false` saves
 ~300–600 favor/hunt for free.
 
-**On-arm baseline** (all 13 `ultima` rows, RETRIBUTION on): `exp_per_min` mean
-238 (166–314), `kills_per_min` mean 4.5, `dmg_per_mana` mean 12.1, 0 damage
-taken, 1 knockdown in 13. The 09.09 - 9 marathon contributed hunts 6–13
-(hunt 1's fizzsac Pain-grind and one slow double-reanim hunt were left out as
-unrepresentative). Off-arm still TODO.
+**On-arm baseline** (all 19 `ultima` rows, RETRIBUTION on): `exp_per_min` mean
+228 (130–321), `kills_per_min` mean 4.6, `dmg_per_mana` mean 12.2, 0 damage
+taken, 2 harmless knockdowns in 19. Hunts 6–13 are the 09.09 - 9 marathon,
+14–19 the 09.10 - 2 marathon (both had a couple of unrepresentative hunts —
+a fizzsac Pain-grind, a slow double-reanim — left out). Off-arm still TODO.
 
 ## Cost context
 
