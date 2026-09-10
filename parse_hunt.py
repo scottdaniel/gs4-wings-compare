@@ -22,6 +22,11 @@ logfile, start, end, date, variant, area, hunt_type, duration = (
 
 with open(logfile, encoding="utf-8", errors="replace") as fh:
     all_lines = fh.readlines()
+# Saga can prefix every line with a "[HH:MM:SS] " client timestamp. Strip it so
+# the ^-anchored combat regexes (DMG_HITS, "^You search the", "^You are dead")
+# still match; the game's own text never starts with a bracketed clock.
+_TS = re.compile(r"^\[\d{1,2}:\d{2}:\d{2}\] ?")
+all_lines = [_TS.sub("", l) for l in all_lines]
 win = all_lines[start-1:end]
 txt = "".join(win)
 
@@ -271,13 +276,20 @@ wing_aegis = len(re.findall(r"\]>pull my wing pin",  txt))
 # ---------------------------------------------------------------- misc
 passes  = len(re.findall(r"Lich: custom/Fizzleworth-attack-\S+ active", txt))
 stun_ev = len(re.findall(r"You are stunned for \d+ round", txt))
-wounds  = len(re.findall(r"shatters a rib|wound to your|fractures your|"
-                         r"nerve damage|snaps your", txt))
-# SMR-maneuver knockdowns -- a creature pins/sweeps Fizzleworth prone, which
-# comes with "acute sense of vulnerability" and a 10s roundtime. Sorcerers
-# defend these badly (low maneuver defense) and CS/bolt attacks well, so this
-# is the number that actually reflects incoming danger.
-knockdowns = txt.count("acute sense of vulnerability")
+# rank-2+ crit wounds on Fizzleworth. Named severe results + bone crits
+# ("your sternum breaks", "shatters your kneecap", ...).
+wounds  = len(re.findall(
+    r"shatters a rib|wound to your|fractures your|nerve damage|snaps your|"
+    r"(?:shatters|breaks) your |"
+    r"your (?:sternum|ribs?|skull|spine|neck|jaw|collarbone|pelvis|"
+    r"kneecap|femur|vertebrae?) (?:breaks|shatters|cracks)", txt))
+# SMR-maneuver knockdowns -- a creature pins/sweeps/trips Fizzleworth prone,
+# which comes with a ~10s roundtime. Sorcerers defend these badly and CS/bolt
+# attacks well, so this is the number that actually reflects incoming danger.
+# "acute sense of vulnerability" is one flavor; the thorn / sweep maneuvers say
+# "You are knocked to the ground" ("It is knocked..." is a creature, not us).
+knockdowns = (txt.count("acute sense of vulnerability")
+              + len(re.findall(r"^\s*You are knocked to the ground", txt, re.M)))
 # a creature webs Fizzleworth (its own SMR maneuver) -- immobilizes, no damage
 webbed = txt.count("You become ensnared in thick strands of webbing")
 fled    = len(re.findall(r"\bYou (?:flee|retreat)\b|Bigshot.*flees", txt))

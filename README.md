@@ -50,23 +50,29 @@ Primary metric: **`exp_per_min`** = `(end_mind − start_mind) / duration_min`
 is bigshot's "Last Hunt" (excludes sac4mana harvest time); `end_mind` is a
 decayed reading so "fried" hunts underestimate a little.
 
-## Result (base n=5, wing n=8, cat n=3, ultima n=19; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=19)
+## Result (base n=5, wing n=8, cat n=3, ultima n=19 RETR-on + 1 RETR-off; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=20)
+
+`ultima` column = the 19 RETRIBUTION-on hunts. The one RETR-off hunt so far is
+called out separately (it was disrupted by a fizzsac pause, not a fair sample).
 
 | | base | wing | cat | ultima |
 |---|---|---|---|---|
-| deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 19 |
-| dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 3 | 0 / 19 |
-| danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.5 | 0 | 0.11 (two harmless knockdowns in 19) |
-| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 130–314, mean 207, median 204 (n=19) |
+| deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 20 |
+| dmg taken | ~0 (once 40, no cube) | ~0 (four hits: ~29+stun, ~15–30, ~10+2 knockdowns, ~5) | 0 / 3 | 0 / 19 on; **63 + rank-2 wound + 5-round stun + knockdown** on the 1 RETR-off hunt (during a fizzsac pause) |
+| danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.62 | 0 | 0.10 on (2 harmless knockdowns in 19); the RETR-off hunt had a wound + stun + knockdown in one hit |
+| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 130–314, mean 207, median 204 (n=19 on; RETR-off hunt 203) |
 | dmg_per_mana | 11.2 | 12.1 | **7.0** | 12.2 |
 | sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 14 / 19 (inline top-off, reliable once dialed in) |
 
-**Defense — clear:** across 35 hunts this content never threatened
-Fizzleworth. 0 deaths, ~0 damage, with or without wings *and* with or without
-the moonstone cube. What incoming damage there is comes from incubus field
-effects (icy stalagmites / "column of frigid air") that the wings don't stop —
-wing hunts 6 and 7 both ate one for ~15–30 and a short stun. The wings' whole
-reason to exist doesn't show up here.
+**Defense — clear:** across 36 hunts, 0 deaths, and only twice did anything
+land hard. Incoming damage is otherwise near-zero, with or without wings *and*
+with or without the moonstone cube. The two real hits: incubus field effects
+(icy stalagmites / "column of frigid air") on wing hunts 6–7 for ~15–30 and a
+short stun; and one inciter thorn maneuver on the RETR-off hunt for ~63 + a
+rank-2 wound + a 5-round stun + a knockdown — but that one landed while bigshot
+was paused for a fizzsac harvest and the character was wandered into a fresh
+room mid-cast, i.e. the rotation wasn't defending. Nothing the wings would have
+stopped. The wings' whole reason to exist still doesn't show up here.
 
 **exp_per_min — no wing benefit visible; if anything wing trends lower, but
 it's confounded.** base 265 vs wing 215 vs cat 285 — but the two lowest wing
@@ -171,9 +177,18 @@ per-hunt favor delta with Retribution on (09.09 night) vs off (next night). If
 losing ~7% of damage doesn't slow the hunts, `RETRIBUTION = false` saves
 ~300–600 favor/hunt for free.
 
-**On-arm baseline** (all 19 `ultima` rows, RETRIBUTION on): `exp_per_min` mean
+**On-arm baseline** (19 `ultima` rows, RETRIBUTION on): `exp_per_min` mean
 207, median 204 (130–314), `kills_per_min` mean 4.6, `dmg_per_mana` mean 12.2,
-0 damage taken, 2 harmless knockdowns in 19. Hunts 6–13 are the 09.09 - 9 marathon,
+0 damage taken, 2 harmless knockdowns in 19.
+
+**Off-arm, hunt 1** (RETRIBUTION off, 09.10 - 3): `exp_per_min` 203, 17 kills /
+4m40s — right in the on-arm range. But it also carries the worst hit in the
+dataset: an inciter thorn maneuver for ~63 + a rank-2 sternum wound + a 5-round
+stun + a knockdown, which ended the hunt. **RETRIBUTION off did not cause it** —
+that's a maneuver, and Retribution only flares at attacks that land; the
+exposure was a fizzsac harvest pause that wandered Fizzleworth into a fresh room
+mid-cast. Doesn't count as a real off-arm sample. Off-arm still effectively
+n=0. Hunts 6–13 are the 09.09 - 9 marathon,
 14–19 the 09.10 - 2 marathon (both had a couple of unrepresentative hunts —
 a fizzsac Pain-grind, a slow double-reanim — left out). Off-arm still TODO.
 
@@ -214,7 +229,8 @@ convenience and a marginal maneuver save.
   Pick `<start_line>`/`<end_line>` around the combat stretch (first
   `Bigshot hunting` / first `Fizzleworth-attack-* active` to just past the last
   `Fizzleworth-attack-* has exited`). `<duration>` is bigshot's own
-  "Last Hunt" figure.
+  "Last Hunt" figure. The parser strips a leading `[HH:MM:SS] ` client
+  timestamp from every line, so timestamped and untimestamped logs both work.
 
 ## Column notes
 
