@@ -57,7 +57,7 @@ decayed reading so "fried" hunts underestimate a little.
 | deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 19 |
 | dmg taken | ~0 (once 40, no cube) | ~0 (three hits: ~29+3-round stun, ~15–30, ~5) | 0 / 3 | 0 / 19 |
 | danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.5 | 0 | 0.11 (two harmless knockdowns in 19) |
-| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 130–321, mean 228 (n=19) |
+| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 130–314, mean 207, median 204 (n=19) |
 | dmg_per_mana | 11.2 | 12.1 | **7.0** | 12.2 |
 | sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 14 / 19 (inline top-off, reliable once dialed in) |
 
@@ -106,18 +106,26 @@ undead flare) and a one-shot `;reanim` buddy off the first inciter. Hypothesis:
 same leveling speed as `base` with fewer danger events, paid in Voln favor
 instead of silver.
 
-**The hypothesis holds.** exp_per_min ranges 130–321, mean **228** (n=19) —
-same ballpark as base's 265. The wide range is a starting-mind / overfill
-artifact, not real speed variance: from-empty and partial-start hunts that stop
-right at the cap read 200–240, hunts left to overfill well past 1220 read 280–
-321, and hunts on a slow inciter-heavy pull read 130–160. `dmg_per_mana` 12.2,
-same as base/wing and ~1.7× cat. **0 damage taken across all 19 hunts, two
-knockdowns** (vs base 1.2 danger/hunt) — the "fewer maneuvers land" claim is
-now on solid n. Both knockdowns (hunts 12 and 19) were a 5-second roundtime and
-nothing else — no wound, stun, or damage. sac4mana harvested on **14 of 19** —
-once the inline `sacrifice mana` top-off (`mana < 45`) was dialed in it fires
-mid-hunt almost every hunt (~90 mana each), so ultima has none of the mana
-starvation that killed cat.
+**The hypothesis holds on defense; on speed the metric is too noisy to call.**
+exp_per_min ranges 130–314, mean **207**, median 204 (n=19). That's below
+base's 265, but base's mean rests on n=3 (two of which were partial-mind starts
+that read high) and `exp_per_min` is dominated by how full mind is at the start
+and stop of a hunt, not by the rotation — the low ultima readings (130–166) are
+all slow inciter-heavy pulls, the mid ones (195–235) are ordinary
+partial-start → fried hunts. Need a matched-start base sample to compare
+properly. `dmg_per_mana` 12.2, same as base/wing and ~1.7× cat. **0 damage
+taken across all 19 hunts, two knockdowns** (vs base 1.2 danger/hunt) — the
+"fewer maneuvers land" claim is now on solid n. Both knockdowns (hunts 12 and
+19) were a 5-second roundtime and nothing else — no wound, stun, or damage.
+sac4mana harvested on **14 of 19** — once the inline `sacrifice mana` top-off
+(`mana < 45`) was dialed in it fires mid-hunt almost every hunt (~90 mana
+each), so ultima has none of the mana starvation that killed cat.
+
+Data note: four ultima hunts (3, 7, 10, 18) turned a bounty in right after the
+hunt, which dumps ~450 field exp into the pool before bigshot reads `exp` —
+their `end_mind` was reading 1641–1709 and inflating `exp_per_min` to 260–321.
+`parse_hunt.py` now stops the `end_mind` scan at a bounty turn-in and clamps a
+post-bounty reading to the cap; those four now read ~158–198.
 
 Rough edges: an early hunt (09.08 #2) died to `encumbered` at 1m45s (loot
 weight, not danger). `reanim_runs` counts the end-of-hunt `;reanim die` cleanup
@@ -164,8 +172,8 @@ losing ~7% of damage doesn't slow the hunts, `RETRIBUTION = false` saves
 ~300–600 favor/hunt for free.
 
 **On-arm baseline** (all 19 `ultima` rows, RETRIBUTION on): `exp_per_min` mean
-228 (130–321), `kills_per_min` mean 4.6, `dmg_per_mana` mean 12.2, 0 damage
-taken, 2 harmless knockdowns in 19. Hunts 6–13 are the 09.09 - 9 marathon,
+207, median 204 (130–314), `kills_per_min` mean 4.6, `dmg_per_mana` mean 12.2,
+0 damage taken, 2 harmless knockdowns in 19. Hunts 6–13 are the 09.09 - 9 marathon,
 14–19 the 09.10 - 2 marathon (both had a couple of unrepresentative hunts —
 a fizzsac Pain-grind, a slow double-reanim — left out). Off-arm still TODO.
 
@@ -213,7 +221,7 @@ convenience and a marginal maneuver save.
 | column | meaning |
 |---|---|
 | `martial_prowess` | was the moonstone cube (spell 1705, extra SMR / maneuver defense) rubbed and active for this hunt. **Confound** — H1 ran without it, H2 onward with it. Auto-detected from a pre-window "rub a solid moonstone cube". Keep it consistent across whatever you're comparing. |
-| `start_mind` / `end_mind` / `mind_gained` | field exp (`Field Exp: N/~1210`) at hunt start (from prep's `exp`, older logs use the last rest reading) and at the first rest reading after; `mind_gained` = end − start = the field exp the hunt actually cost. `end_mind` is a decayed lower bound (bigshot reads `exp` a bit into the rest), so `mind_gained` is a slight underestimate. |
+| `start_mind` / `end_mind` / `mind_gained` | field exp (`Field Exp: N/~1210`) at hunt start (from prep's `exp`, older logs use the last rest reading) and at the first rest reading after; `mind_gained` = end − start = the field exp the hunt actually cost. `end_mind` is a decayed lower bound (bigshot reads `exp` a bit into the rest), so `mind_gained` is a slight underestimate. The `end_mind` scan stops at a bounty turn-in (`earned N bounty points, M experience`) — that dumps ~450 field exp into the pool, so a post-bounty reading isn't what the hunt earned; a reading above the cap is clamped to it, and a fried hunt whose only reading is post-bounty gets `end_mind` = cap. |
 | `duration` / `duration_min` | bigshot's reported "Last Hunt" time (active hunting, not travel) |
 | `kills_per_min` | `kills / duration_min` |
 | `exp_per_min` | `mind_gained / duration_min` — **the primary metric**: field exp earned per minute of hunt (leveling speed). |

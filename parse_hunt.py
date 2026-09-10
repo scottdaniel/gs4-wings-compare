@@ -52,16 +52,30 @@ else:
 
 # end_mind: first Field Exp reading after the window (bigshot checks `exp` early
 # in the rest). It's already decaying from the true peak, so it's a lower bound
-# -- for hunts that ended "fried" the real end was ~the cap (1206-1220).
+# -- for hunts that ended "fried" the real end was ~the cap (1206-1240).
 # mind_gained = end - start is the field exp the hunt cost, which normalizes
 # kills/duration for an inconsistent starting mind (kills_per_100mind).
 # Look past the window for the first `exp` reading, but stop at the next
-# "Bigshot hunting" so a delayed reading (long loot/travel tail) is still
-# caught without ever grabbing the *next* hunt's starting mind.
+# "Bigshot hunting" (don't grab the next hunt's start) AND at a bounty turn-in
+# ("earned N bounty points, M experience points") -- that dumps ~430-500 field
+# exp into the pool, so a post-bounty reading (e.g. 1,670/1,220) is not what the
+# hunt earned. bigshot only turns bounties in after a hunt has fully ended, so
+# when the only reading is post-bounty the hunt ended fried -> use the cap.
+BOUNTY_IN = re.compile(r"earned [\d,]+ bounty points, [\d,]+ experience")
 _post = all_lines[end:]
-_stop = next((i for i, ln in enumerate(_post) if "Bigshot hunting" in ln), len(_post))
-_em = re.findall(r"Field Exp: ([\d,]+)/1,?2\d\d", "".join(_post[:_stop]))
-end_mind = _em[0].replace(",", "") if _em else "?"
+_i_hunt = next((i for i, ln in enumerate(_post) if "Bigshot hunting" in ln), len(_post))
+_i_bnty = next((i for i, ln in enumerate(_post) if BOUNTY_IN.search(ln)), len(_post))
+_em = re.findall(r"Field Exp: ([\d,]+)/(1,?2\d\d)", "".join(_post[:min(_i_hunt, _i_bnty)]))
+if _em:
+    _val, _cap = (int(x.replace(",", "")) for x in _em[0])
+    end_mind = str(min(_val, _cap))          # clamp trivial overfill to the cap
+elif _i_bnty < _i_hunt:
+    # no reading before the bounty turn-in. bigshot only turns bounties in once
+    # a hunt has fully ended (heading to rest) -> this hunt ended fried; use cap.
+    _cap = re.search(r"Field Exp: [\d,]+/(1,?2\d\d)", "".join(_post))
+    end_mind = _cap.group(1).replace(",", "") if _cap else "?"
+else:
+    end_mind = "?"                            # next hunt started first -- unknown
 if start_mind.isdigit() and end_mind.isdigit():
     mind_gained = int(end_mind) - int(start_mind)
 else:
