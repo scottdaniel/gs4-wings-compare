@@ -19,14 +19,19 @@ Energy Wings kit, to decide whether the wings are worth running.
 - `variant = ultima` — `Fizzleworth-attack-ultima.lic` — `base`'s 710 → 706 →
   hold-DoT finish, but a creature-specific opener plus two Voln self-auras and
   a one-shot animate buddy. No wings.
-  - **magna vereri** → Web 118 (they don't cast; a snare is the useful
-    disable). **Ivasian inciter / dark-eyed incubus / pestilent vision** →
-    Corrupt Essence 703 (all three cast; silence beats a web), once/target.
+  - Den of Rot creatures: **pestilent vision** (non-corporeal undead),
+    **magna vereri** (corporeal undead), **Ivasian inciter** and
+    **dark-eyed incubus** (both living).
+  - **magna vereri** → Web 118 (their attack is a CS beckon, not a caster
+    threat; a snare is the useful disable). **Ivasian inciter / dark-eyed
+    incubus / pestilent vision** → Corrupt Essence 703 (silence), once/target.
     Unrecognised → Web 118.
   - **pestilent vision** additionally → Symbol of Disruption *aura* (Voln,
-    favor) — one cast covers every noncorporeal undead struck for rank×10s;
-    gswiki recommends it on visions "to lower their TD to aid in warding
-    them". Re-armed when it lapses, not per-creature.
+    favor) — procs on Fizzleworth's hits against non-corporeal undead (RT +
+    AS/DS/CS/TD/UAF penalties, no damage); gswiki recommends it on visions "to
+    lower their TD to aid in warding them". Re-armed when it lapses. It *does*
+    fire here (~5×/hunt on visions) — see the Disruption note — but the visions
+    are already trivial, so the payoff is marginal.
   - **Symbol of Retribution** *aura* (Voln, favor) kept up every pass —
     reactive divine flare back at undead that strike Fizzleworth. **Dead weight
     in Den of Rot** (undead here never land a hit — see the Retribution
@@ -108,9 +113,9 @@ Not worth pursuing for this content.
 
 **ultima (experimental, n=20):** `base`'s Web/Maelstrom/Tether spine kept, but
 the opener is creature-specific (Web on vereri, Corrupt Essence 703 on the
-casters), plus two Voln self-auras (Symbol of Disruption on visions to drop
-their TD; Symbol of Retribution — which turns out to do nothing here, see
-below) and a one-shot `;reanim` buddy off the first inciter. Hypothesis: same
+casters), plus two Voln self-auras (Symbol of Disruption + Symbol of
+Retribution — both near-worthless in this content, see the notes below) and a
+one-shot `;reanim` buddy off the first inciter. Hypothesis: same
 leveling speed as `base` with fewer danger events, paid in Voln favor instead
 of silver.
 
@@ -146,7 +151,11 @@ tracks a `buddy` context (`An animated <creature>` attack lines + non-player
 thorn lines) that books that damage as neither taken nor dealt; every ultima
 hunt now reads 0 taken, matching its 0 wounds/stun.
 Verdict: **ultima works — matches base speed, quieter, self-sufficient on
-mana.** Cost is Voln favor for the auras.
+mana.** The two Voln auras it carries are both near-worthless in Den of Rot,
+though: Retribution never fires, Disruption fires but changes nothing
+measurable (see the two notes below). Run `ultima` here with `RETRIBUTION =
+false` and Disruption optional — the rotation itself is the value, not the
+symbols.
 
 ### Symbol of Retribution: it does nothing in this content — turn it off
 
@@ -159,11 +168,11 @@ defense.
 
 **Across all 19 RETRIBUTION-on hunts the aura flared exactly 0 times.**
 `grep "aura unleashes a blast of divine retribution"` over every log: no hits.
-Why: the only undead in Den of Rot are the pestilent visions, and the rotation
-silences them (Corrupt Essence 703) and kills them fast — every single vision
-attack against Fizzleworth in the 09.09/09.10 marathons was warded off
-(his TD ~385 vs their CS ~315). Nothing else here is undead. So Retribution has
-nothing to react to.
+The Den of Rot undead are pestilent visions and magna vereri (inciters and
+incubi are living, so Retribution never applies to them). Neither undead ever
+landed a hit on Fizzleworth: every vision "vile energies" gaze and every vereri
+"beckon" in the 09.09/09.10 marathons was warded off (his TD ~385 vs their CS
+~315; vereri beckons 16/16 warded). So Retribution had nothing to react to.
 
 **Earlier draft of this section was wrong.** It credited Retribution with "11
 flares, 751 dmg, ~7% of output (51/54/92/90/73/64/58/53/82/54/80)". Those are
@@ -180,6 +189,29 @@ only if you take `ultima` somewhere with undead that actually connect.
 The 09.10 - 3 hunt below is nominally the first "off" hunt but tells us nothing
 about Retribution — the hard hit on it came from an Ivasian *inciter* (living,
 not undead), which Retribution would never touch on or off.
+
+### Symbol of Disruption: it fires, but the payoff is thin
+
+Per [gswiki](https://gswiki.play.net/Symbol_of_Disruption): procs on the
+caster's hits against **non-corporeal undead**, hitting them with roundtime +
+AS/DS/CS/TD/UAF/UDF/Mana-Control penalties (no direct damage). Proc line:
+`The <undead> writhes as its spectral form bends and warps uncontrollably!` →
+`It's like fighting fog!`.
+
+Unlike Retribution, **this one works** — it procs **~5×/hunt**, always on
+pestilent visions (magna vereri are corporeal undead, so they never get it;
+97/97 procs in the marathons were "vision"). But its stated job — lower vision
+TD so Fizzleworth wards them — is nearly moot here: against visions his warding
+already succeeds **~93%** (CS ~390 vs TD ~260–315), disrupted or not (32/34
+land after a recent proc, 61/66 without). The ~7% ward failures it might turn
+around are worth ~0.3 casts/hunt. The visions also die in 1–2 Maelstrom hits +
+the disease DoT and land nothing on Fizzleworth regardless.
+
+So Disruption is doing *something* real, but nothing that moves `exp_per_min`,
+`kills_per_min`, or defense in this content. If favor is tight, it's a
+reasonable cut too; if you keep one Voln aura for `ultima` here, keep this one
+over Retribution (at least it fires). The real value would show up against
+non-corporeal undead with TD high enough to actually resist him.
 
 **ultima row set** (20 hunts, 19 with the aura up + 1 without — the aura never
 fired either way, see above): `exp_per_min` mean 207, median 204 (130–314),
@@ -244,7 +276,7 @@ convenience and a marginal maneuver save.
 | `web_casts` / `maelstrom_casts` / `tether_casts` / `pain_casts` | `incant 118` / `prep 710` / `incant\|prep 706` / `prep\|prepare 711` command sends, from **any** script in the window (attack-* and fizzsac) |
 | `corrupt_casts` / `grasp_casts` / `catalyst_casts` | `incant 703` / `709` / `719` sends. `corrupt_casts` fires for both `cat` and `ultima`; `grasp`/`catalyst` are `cat` only. 0 for base/wing. (Inciter Pain 711 lands in `pain_casts`.) |
 | `reanim_runs` / `animate_casts` | `cat` / `ultima` — times `;reanim` ran / an Animate Dead corpse-raise landed. `ultima` caps `reanim_runs` at 1 per hunt by design. |
-| `disruption_casts` / `retribution_casts` | `ultima` only — `symbol of disruption` / `symbol of retribution` sends (Voln self-auras, favor not mana; each covers rank×10s so counts are low). 0 for base/wing/cat. |
+| `disruption_casts` / `retribution_casts` | `ultima` only — `symbol of disruption` / `symbol of retribution` sends (Voln self-auras, favor not mana; each covers rank×10s so counts are low). 0 for base/wing/cat. These count *casts*, not effect: Retribution never once flared in this content and Disruption's proc isn't tracked as a column (it fires ~5×/hunt on visions — see the aura notes). |
 | `symbol_mana_casts` | `symbol of mana` sends (bigshot casts it; the game logs no mana amount) |
 | `mana_out` | confirmed casts only, priced at targeted cost (Web 5, Maelstrom 10, Tether 6, Pain 11) |
 | `mana_in` | "N mana surge into you" (sac4mana's `sacrifice mana`) + 50 per `symbol_mana_casts` (Symbol of Mana is a flat 50-point refill, unlogged). Excludes natural regen. |
