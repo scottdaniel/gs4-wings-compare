@@ -208,18 +208,22 @@ for s in (l.rstrip("\n") for l in win):
     m = DMG_HITS.search(s)
     if m:
         v = int(m.group(1))
-        if ctx == "buddy" and ctx_age <= 6:
-            last = (v, "?")            # buddy maneuver on a creature -- not ours
+        if ctx == "buddy":
+            # buddy maneuver on a creature -- not ours. A multi-target AoE
+            # (thorns) spreads its "... hits for N" volleys over a dozen lines
+            # with crit/status text between, so keep the buddy context alive on
+            # each damage line rather than aging out mid-resolution.
+            last = (v, "?"); ctx_age = 0
         else:
             taken += v; last = (v, "taken"); ctx, ctx_age = "in", 0
         continue
     m = DMG_FOR.search(s)
     if m:
         n = int(m.group(1))
-        if ctx == "buddy" and ctx_age <= 6:
-            last = (n, "?")
-        elif CREATURE.search(s):
+        if CREATURE.search(s):        # a named creature -> Fizzleworth's spell
             dealt += n; last = (n, "dealt"); ctx, ctx_age = "out", 0
+        elif ctx == "buddy":
+            last = (n, "?"); ctx_age = 0
         elif ctx == "in" and ctx_age <= 3:
             taken += n; last = (n, "taken")
         else:
@@ -228,8 +232,8 @@ for s in (l.rstrip("\n") for l in win):
     m = DMG_CONT.search(s)
     if m:
         n = int(m.group(1))
-        if ctx == "buddy" and ctx_age <= 6:
-            last = (n, "?")
+        if ctx == "buddy":
+            last = (n, "?"); ctx_age = 0
         elif ctx == "in" and ctx_age <= 3:
             taken += n; last = (n, "taken")
         elif ctx == "out":
