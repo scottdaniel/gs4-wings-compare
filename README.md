@@ -56,30 +56,31 @@ Primary metric: **`exp_per_min`** = `(end_mind − start_mind) / duration_min`
 is bigshot's "Last Hunt" (excludes sac4mana harvest time); `end_mind` is a
 decayed reading so "fried" hunts underestimate a little.
 
-## Result (base n=5, wing n=8, cat n=3, ultima n=20; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=20)
+## Result (base n=5, wing n=8, cat n=3, ultima n=27; usable exp_per_min: base n=3, wing n=6, cat n=3, ultima n=27)
 
-(19 of the 20 `ultima` hunts had Symbol of Retribution up — but the aura never
-once fired in this content, so it's not a variable here. See the Retribution
-section.)
+19 of the 27 `ultima` hunts had Symbol of Retribution up, 8 didn't — but the
+aura never once fired in either case, so it's not a variable here (see the
+Retribution section, which now also has a favor-trend readout since the
+RETRIBUTION-off session).
 
 | | base | wing | cat | ultima |
 |---|---|---|---|---|
-| deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 20 |
-| dmg taken | ~0 (once 40, no cube) | ~0 (four hits: ~29+stun, ~15–30, ~10+2 knockdowns, ~5) | 0 / 3 | ~0 for 19; **63 + rank-2 wound + 5-round stun + knockdown** on one hunt (an inciter thorn during a fizzsac pause) |
-| danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.62 | 0 | 0.25 (2 harmless knockdowns + one 3-effect thorn hit, in 20) |
-| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 130–314, mean 207, median 204 (n=20) |
-| dmg_per_mana | 11.2 | 12.1 | **7.0** | 12.2 |
-| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 14 / 20 (inline top-off, reliable once dialed in) |
+| deaths | 0 / 5 | 0 / 8 | 0 / 3 | 0 / 27 |
+| dmg taken | ~0 (once 40, no cube) | ~0 (four hits: ~29+stun, ~15–30, ~10+2 knockdowns, ~5) | 0 / 3 | ~0 for 24; three real hits — 63+wound+stun+knockdown, ~13, and a bad one: 99 dmg + 2 stuns + 2 knockdowns |
+| danger events (knockdown + enemy web + wound + stun) / hunt | 1.2 | 0.62 | 0 | 0.37 (10 events in 27, concentrated in 3 hunts) |
+| exp_per_min | 188, 292, 317 (mean 265) | 268, 268, 245, 205, 153, 150 (mean 215) | 321, 249, 336 (mean 302; all short partials) | 83–314, mean 193, median 197 (n=27) |
+| dmg_per_mana | 11.2 | 12.1 | **7.0** | 11.8 |
+| sac4mana harvest | 4 / 5 | 1 / 8 (a post-combat tail harvest) | 1 / 3 (fix fired once; twice ran dry first) | 14 / 27 (inline top-off, reliable once dialed in) |
 
-**Defense — clear:** across 36 hunts, 0 deaths, and only twice did anything
-land hard. Incoming damage is otherwise near-zero, with or without wings *and*
-with or without the moonstone cube. The two real hits: incubus field effects
+**Defense — clear:** across 43 hunts, 0 deaths, and real hits are rare and
+concentrated. Incoming damage is otherwise near-zero, with or without wings
+*and* with or without the moonstone cube. The real hits: incubus field effects
 (icy stalagmites / "column of frigid air") on wing hunts 6–7 for ~15–30 and a
-short stun; and one inciter thorn maneuver on the RETR-off hunt for ~63 + a
-rank-2 wound + a 5-round stun + a knockdown — but that one landed while bigshot
-was paused for a fizzsac harvest and the character was wandered into a fresh
-room mid-cast, i.e. the rotation wasn't defending. Nothing the wings would have
-stopped. The wings' whole reason to exist still doesn't show up here.
+short stun; and two ultima hunts (both RETR-off, both living-creature
+maneuvers — an inciter, then an inciter + incubus) for ~63 and ~99 with wounds/
+stuns/knockdowns, one during a fizzsac pause where the rotation wasn't
+defending. Nothing the wings would have stopped, and nothing tied to
+Retribution. The wings' whole reason to exist still doesn't show up here.
 
 **exp_per_min — no wing benefit visible; if anything wing trends lower, but
 it's confounded.** base 265 vs wing 215 vs cat 285 — but the two lowest wing
@@ -111,35 +112,43 @@ empty before the guard opened at all. The high `exp_per_min` numbers (321,
 inflated by the front-loaded absorption curve, not a real speed advantage.
 Not worth pursuing for this content.
 
-**ultima (experimental, n=20):** `base`'s Web/Maelstrom/Tether spine kept, but
-the opener is creature-specific (Web on vereri, Corrupt Essence 703 on the
-casters), plus two Voln self-auras (Symbol of Disruption + Symbol of
-Retribution — both near-worthless in this content, see the notes below) and a
-one-shot `;reanim` buddy off the first inciter. Hypothesis: same
-leveling speed as `base` with fewer danger events, paid in Voln favor instead
-of silver.
+**ultima (experimental, n=27: 19 RETRIBUTION-on + 8 RETRIBUTION-off):**
+`base`'s Web/Maelstrom/Tether spine kept, but the opener is creature-specific
+(Web on vereri, Corrupt Essence 703 on the casters), plus two Voln self-auras
+(Symbol of Disruption + Symbol of Retribution — both near-worthless in this
+content, see the notes below) and a one-shot `;reanim` buddy off the first
+inciter. Hypothesis: same leveling speed as `base` with fewer danger events,
+paid in Voln favor instead of silver.
 
 **The hypothesis holds on defense; on speed the metric is too noisy to call.**
-exp_per_min ranges 130–314, mean **207**, median 204 (n=20). That's below
+exp_per_min ranges 83–314, mean **193**, median 197 (n=27). That's below
 base's 265, but base's mean rests on n=3 (two of which were partial-mind starts
 that read high) and `exp_per_min` is dominated by how full mind is at the start
-and stop of a hunt, not by the rotation — the low ultima readings (130–166) are
-all slow inciter-heavy pulls, the mid ones (195–235) are ordinary
-partial-start → fried hunts. Need a matched-start base sample to compare
-properly. `dmg_per_mana` 12.2, same as base/wing and ~1.7× cat. **Defense: 19
-of 20 hunts took 0 damage** (vs base 1.2 danger/hunt). The two knockdowns on
-those (hunts 12, 19) were a 5-second roundtime and nothing else. The 20th hunt
-took the dataset's worst hit — an inciter thorn maneuver for ~63 + a rank-2
-wound + a 5-round stun + a knockdown — but that landed while bigshot was paused
-for a fizzsac harvest and the character had been wandered into a fresh room
-mid-cast, i.e. the rotation wasn't defending. sac4mana harvested on **14 of
-20** — once the inline `sacrifice mana` top-off (`mana < 45`) was dialed in it
-fires mid-hunt almost every hunt (~90 mana each), so ultima has none of the
-mana starvation that killed cat.
+and stop of a hunt, not by the rotation — the low ultima readings are slow
+inciter-heavy pulls, the mid ones are ordinary partial-start → fried hunts.
+Need a matched-start base sample to compare properly. `dmg_per_mana` 11.8, same
+as base/wing and ~1.7× cat. **Defense: 24 of 27 hunts took 0 damage** (vs base
+1.2 danger/hunt). Three hunts didn't:
+- hunt 12 / 19 (RETR-on): a 5-second-roundtime knockdown each, nothing else.
+- hunt 20 (first RETR-off): an inciter thorn for ~63 + a rank-2 wound + a
+  5-round stun + a knockdown, during a fizzsac pause (rotation wasn't
+  defending) — see the RETRIBUTION section.
+- hunt 26 (RETR-off): the worst hunt in the dataset — two separate hits from
+  living creatures (inciter thorn, then an incubus AoE that kept landing after
+  the script had exited while Fizzleworth was stunned) for ~99 total, 2 stuns,
+  2 knockdowns. bigshot bailed on falling health, not a named injury. Cut the
+  hunt to 6 kills / 4m13s, the slowest `exp_per_min` (83) in the dataset.
 
-Data note: four ultima hunts (3, 7, 10, 18) turned a bounty in right after the
-hunt, which dumps ~450 field exp into the pool before bigshot reads `exp` —
-their `end_mind` was reading 1641–1709 and inflating `exp_per_min` to 260–321.
+Both bad RETR-off hunts were living-creature maneuvers (inciter/incubus) that
+Retribution can't touch either way — not evidence Retribution matters, just
+evidence this rotation still eats an occasional bad SMR roll. sac4mana
+harvested on **14 of 27** — once the inline `sacrifice mana` top-off
+(`mana < 45`) was dialed in it fires mid-hunt almost every hunt (~90 mana
+each), so ultima has none of the mana starvation that killed cat.
+
+Data note: four ultima hunts turned a bounty in right after the hunt, which
+dumps ~450 field exp into the pool before bigshot reads `exp` — their
+`end_mind` was reading 1641–1709 and inflating `exp_per_min` to 260–321.
 `parse_hunt.py` now stops the `end_mind` scan at a bounty turn-in and clamps a
 post-bounty reading to the cap; those four now read ~158–198.
 
@@ -148,8 +157,7 @@ weight, not danger). `reanim_runs` counts the end-of-hunt `;reanim die` cleanup
 as a run. `dmg_taken` on the buddy hunts (once 28, 89, 66, 55) was always the
 reanim buddy's thorn AoE landing on a creature, not incoming — `parse_hunt.py`
 tracks a `buddy` context (`An animated <creature>` attack lines + non-player
-thorn lines) that books that damage as neither taken nor dealt; every ultima
-hunt now reads 0 taken, matching its 0 wounds/stun.
+thorn lines) that books that damage as neither taken nor dealt.
 Verdict: **ultima works — matches base speed, quieter, self-sufficient on
 mana.** The two Voln auras it carries are both near-worthless in Den of Rot,
 though: Retribution never fires, Disruption fires but changes nothing
@@ -186,9 +194,29 @@ a hit — so the favor it costs (part of the ~2,000/hunt symbol batch) is pure
 waste. No on/off exp comparison needed; there's nothing to compare. Keep it
 only if you take `ultima` somewhere with undead that actually connect.
 
-The 09.10 - 3 hunt below is nominally the first "off" hunt but tells us nothing
-about Retribution — the hard hit on it came from an Ivasian *inciter* (living,
-not undead), which Retribution would never touch on or off.
+Hunts 20 and 26 (both RETRIBUTION-off) tell us nothing about Retribution
+either — hunt 20's hit came from an Ivasian *inciter*, hunt 26's from an
+inciter and an *incubus*, none of them undead, so Retribution would never
+touch either on or off.
+
+**Favor, with RETRIBUTION off (09.10 - 3, 8 hunts, `[Total Favor: N]` readings
+tracked start to end):** **817,687 → 818,177, net +490** (~+61/hunt average) —
+a clear reversal of the earlier RETRIBUTION-on estimate of ≈ −450/hunt. Per
+hunt it wasn't uniform, though:
+
+| hunt | favor Δ | note |
+|---|---|---|
+| 1–5 | +313, +1,904, +1,046, +162, +924 | net +4,349 |
+| 6–8 | −996, −1,006, −1,857 | net −3,859 (hunt 7 here is the 6-kill/99-dmg disaster — fewer undead kills means fewer ~330-favor vision-release refunds to cover the symbol upkeep) |
+
+So the back half's losses ate most of the front half's gains, and the swing
+tracks kill rate (favor income only comes from releasing undead) more than it
+proves anything about `RETRIBUTION` by itself — this session can't be compared
+directly against the earlier on-session (different pulls, different hunt
+count). But the magnitude — a ~500/hunt swing from ≈ −450 to ≈ +60 — lines up
+with what dropping a symbol you were recasting every hunt for zero effect
+should save. Worth confirming with a longer, cleaner off run, but the
+direction agrees with "turn it off."
 
 ### Symbol of Disruption: it fires, but the payoff is thin
 
